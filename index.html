@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<!-- v20260611205707 -->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root { --gold: #c5a059; --kings-blue: #0b1264; --dark-blue: #080d4a; }
+    body { background: var(--kings-blue); color: white; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; margin:0; overflow-x: hidden; }
+    .hidden { display: none !important; }
+    #view-splash { position: fixed; inset: 0; background: var(--kings-blue); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
+    .btn-participate { background: var(--gold); color: white; border: none; padding: 15px 35px; border-radius: 50px; font-weight: bold; font-size: 1.2rem; cursor:pointer; }
+    .sponsor-strip { background: white; overflow: hidden; height: 50px; display: flex; align-items: center; border-bottom: 2px solid var(--gold); }
+    .marquee { display: flex; width: max-content; animation: scroll 30s linear infinite; }
+    #soccer-field { width: 100%; max-width: 360px; height: 480px; background: #2e7d32; margin: 15px auto; border: 3px solid white; border-radius: 10px; position: relative; overflow: hidden; background-image: repeating-linear-gradient(#388e3c 0, #388e3c 40px, #2e7d32 40px, #2e7d32 80px); }
+    #soccer-field::after { content: ''; position: absolute; bottom: -2px; left: 20%; width: 60%; height: 80px; border: 2px solid white; border-bottom: none; }
+    #soccer-field::before { content: ''; position: absolute; top: 50%; left: -10%; width: 120%; height: 2px; background: white; }
+    .player-slot { position: absolute; width: 70px; text-align: center; z-index: 10; }
+    .player-icon { width: 48px; height: 48px; background: white; border-radius: 50%; margin: 0 auto; border: 2px solid var(--gold); cursor: pointer; background-size: cover; background-position: center; color: black; font-weight: bold; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; }
+    .player-name-tag { font-size: 0.5rem; background: var(--gold); color: black; border-radius: 4px; padding: 1px 2px; margin-top: 2px; font-weight: bold; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--dark-blue); display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid var(--gold); z-index: 1000; }
+    .nav-btn { color: rgba(255,255,255,0.6); text-align: center; font-size: 0.7rem; cursor: pointer; flex: 1; }
+    .nav-btn i { font-size: 1.2rem; display: block; }
+    .nav-btn.active { color: var(--gold); }
+    .card-fanta { background: rgba(255,255,255,0.07); border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+    input, select { background: white !important; color: black !important; border-radius: 8px !important; margin-bottom: 10px; }
+    .sub-nav { display: flex; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 15px; }
+    .sub-nav-btn { flex: 1; padding: 10px; text-align: center; font-size: 0.8rem; cursor: pointer; border-radius: 10px; }
+    .sub-nav-btn.active { background: var(--gold); color: black; font-weight: bold; }
+    .role-tabs { display: flex; justify-content: space-between; margin-bottom: 10px; gap: 5px; }
+    .role-tab { flex: 1; padding: 5px 2px; border: 1px solid var(--gold); border-radius: 5px; font-size: 0.65rem; cursor: pointer; text-align: center; }
+    .role-tab.active { background: var(--gold); color: black; }
+    .slot-vuoto { border: 1px solid rgba(197,160,89,0.3); background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; }
+    .slot-img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gold); margin-right: 12px; object-fit: cover; }
+    .user-rank-box { background: var(--gold); color: black; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+    .match-pred-box { background: rgba(255,255,255,0.05); border-left: 4px solid var(--gold); padding: 12px; margin-bottom: 12px; border-radius: 8px; }
+    #overlay-scelta { position: fixed; inset: 0; background: var(--kings-blue); z-index: 3500; padding: 20px; overflow-y: auto; display: none; }
+    .table-kings { width: 100%; color: white; border-collapse: collapse; }
+    .table-kings th { color: var(--gold); border-bottom: 1px solid var(--gold); padding: 8px; text-align: left; }
+    .table-kings td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .player-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 8px; border: 1px solid rgba(197,160,89,0.2); }
+    .player-photo-mini { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gold); margin-right: 10px; object-fit: cover; }
+    .user-logo-home { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--gold); margin-right: 8px; object-fit: cover; }
+    #overlay-edit-player { position:fixed; inset:0; background:var(--kings-blue); z-index:3000; padding:20px; overflow-y:auto; display:none; }
+    #overlay-edit-utente { position:fixed; inset:0; background:var(--kings-blue); z-index:3000; padding:20px; overflow-y:auto; display:none; }
+    #overlay-squadra-admin { position:fixed; inset:0; background:var(--kings-blue); z-index:3000; padding:20px; overflow-y:auto; display:none; }
+    #overlay-indice-bonus { position:fixed; inset:0; background:var(--kings-blue); z-index:3000; padding:20px; overflow-y:auto; display:none; }
+    #overlay-resoconto { position:fixed; inset:0; background:var(--kings-blue); z-index:3000; padding:20px; overflow-y:auto; display:none; }
+    #overlay-confirm { position:fixed; inset:0; background:rgba(8,13,74,0.92); z-index:4000; padding:20px; display:none; align-items:center; justify-content:center; }
+    #overlay-confirm .card-fanta { max-width:340px; width:100%; }
+    .campo-bloccato-msg { display:none; background:rgba(197,160,89,0.15); border:1px solid var(--gold); border-radius:8px; color:var(--gold); font-size:0.85rem; text-align:center; font-weight:bold; padding:8px; margin-bottom:8px; }
+    .campo-bloccato-msg.show { display:block; }
+  </style>
+</head>
+<body>
+
+<div id="view-splash">
+  <div class="text-center mb-4"><img src="https://i.imgur.com/FFWT0TZ.png" width="220"></div>
+  <button class="btn-participate" onclick="entrateNellApp()">PARTECIPA A FANTAKINGS CUP</button>
+</div>
+
+<div id="view-login" class="container mt-5 hidden">
+  <div class="text-center mb-4"><img src="https://i.imgur.com/FFWT0TZ.png" width="120"></div>
+  <div class="card-fanta">
+    <h3 class="text-center text-warning mb-4">Accedi</h3>
+    <input type="text" id="l-user" class="form-control" placeholder="Email o Username">
+    <input type="password" id="l-pass" class="form-control" placeholder="Password">
+    <button id="btn-login" class="btn btn-warning w-100 fw-bold" onclick="eseguiLogin()">ENTRA</button>
+    <button class="btn btn-link w-100 text-white-50 btn-sm mt-3" onclick="switchV('view-reg')">Registrati ora</button>
+  </div>
+</div>
+
+<div id="view-reg" class="container mt-5 hidden">
+  <div class="card-fanta">
+    <h3 class="text-center text-warning mb-4">Crea Account</h3>
+    <input type="text" id="r-nome" class="form-control" placeholder="Nome">
+    <input type="text" id="r-cogn" class="form-control" placeholder="Cognome">
+    <input type="text" id="r-user" class="form-control" placeholder="Username">
+    <input type="email" id="r-mail" class="form-control" placeholder="Email">
+    <input type="password" id="r-pass" class="form-control" placeholder="Password">
+    <button class="btn btn-warning w-100 fw-bold" onclick="eseguiReg()">INVIA ISCRIZIONE</button>
+    <button class="btn btn-link w-100 text-white" onclick="switchV('view-login')">Torna al login</button>
+  </div>
+</div>
+
+<div id="view-app" class="hidden">
+  <div class="sponsor-strip"><div class="marquee" id="marqueeSponsor"></div></div>
+  <div class="container mt-3">
+
+    <div id="header-coins" class="hidden d-flex justify-content-between align-items-center mb-3">
+      <span class="badge border border-warning text-warning" id="user-coins-display">0 KingsChe Coins</span>
+      <div class="d-flex align-items-center">
+        <img id="user-logo-display" class="user-logo-home hidden">
+        <h6 id="welcome-msg" class="m-0 small"></h6>
+      </div>
+    </div>
+
+    <!-- CAMPO -->
+    <div id="sec-campo">
+      <div class="d-flex justify-content-end mb-1">
+        <button class="btn btn-sm btn-outline-warning" onclick="apriIndiceBonusMalus()"><i class="fas fa-list-ol"></i> Tutti i Bonus/Malus</button>
+      </div>
+      <div class="text-center mb-2">
+        <h5 class="text-warning d-inline" id="label-giornata-attuale">Caricamento...</h5>
+        <span id="badge-giornata-stato" class="badge ms-2" style="font-size:0.6rem"></span>
+      </div>
+      <div id="campo-bloccato-msg" class="campo-bloccato-msg">Giornata chiusa - formazione non modificabile</div>
+      <select id="modulo-select" class="form-select mb-3" onchange="disegnaCampo()">
+        <option value="" disabled selected>Scegli Modulo</option>
+        <option value="3-2-1">Modulo 3-2-1</option>
+        <option value="2-2-2">Modulo 2-2-2</option>
+        <option value="2-3-1">Modulo 2-3-1</option>
+        <option value="3-1-2">Modulo 3-1-2</option>
+      </select>
+      <div id="soccer-field"></div>
+      <h6 class="text-warning mt-3 text-uppercase">Panchina Libera</h6>
+      <div id="panchina-container" class="d-flex flex-wrap gap-2"></div>
+      <h6 class="text-warning mt-4 text-uppercase"><i class="fas fa-dice"></i> Pronostici Risultati</h6>
+      <div id="container-pronostici"></div>
+      <button id="btn-salva-tutto" class="btn btn-success w-100 fw-bold mt-4" onclick="salvaTutto()">SALVA TUTTO</button>
+    </div>
+
+    <!-- SQUADRA -->
+    <div id="sec-squadra" class="hidden">
+      <div class="sub-nav">
+        <div id="btn-mia-squadra" class="sub-nav-btn active" onclick="switchSquadraSub('mia-squadra')">La Tua Squadra</div>
+        <div id="btn-listone" class="sub-nav-btn" onclick="switchSquadraSub('listone')">Listone</div>
+      </div>
+      <div id="sub-mia-squadra">
+        <div id="mia-squadra-slots"></div>
+        <div id="squadra-bloccata-msg" class="campo-bloccato-msg"></div>
+        <button id="btn-salva-squadra-definitiva" class="btn btn-warning w-100 fw-bold mt-3 mb-5" onclick="salvaSquadraDefinitiva()">SALVA SQUADRA DEFINITIVA</button>
+      </div>
+      <div id="sub-listone" class="hidden">
+        <div class="role-tabs">
+          <div class="role-tab active" id="tab-A" onclick="filtraListone('A',this)">ATT</div>
+          <div class="role-tab" id="tab-C" onclick="filtraListone('C',this)">CEN</div>
+          <div class="role-tab" id="tab-D" onclick="filtraListone('D',this)">DIF</div>
+          <div class="role-tab" id="tab-GK" onclick="filtraListone('GK',this)">POR</div>
+          <div class="role-tab" id="tab-ALL" onclick="filtraListone('ALL',this)">ALL</div>
+          <div class="role-tab" id="tab-PRES" onclick="filtraListone('PRES',this)">PRES</div>
+        </div>
+        <div id="listone-container"></div>
+      </div>
+    </div>
+
+    <!-- CLASSIFICA -->
+    <div id="sec-classifica" class="hidden">
+      <div class="user-rank-box" id="my-rank-display">Posizione: - | Punti: 0</div>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="text-warning m-0">Classifica Generale</h4>
+        <button class="btn btn-sm btn-outline-warning" onclick="apriResocontoGenerale()"><i class="fas fa-clipboard-list"></i> Resoconto Bonus</button>
+      </div>
+      <div class="small text-white-50 mb-2" style="font-size:0.65rem">Tocca un utente per vedere il dettaglio bonus/malus giornata per giornata</div>
+      <div class="card-fanta p-0">
+        <table class="table-kings w-100">
+          <thead><tr><th>Pos</th><th>Utente</th><th class="text-end">Punti</th></tr></thead>
+          <tbody id="classifica-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="sec-admin" class="hidden">
+      <h4 class="text-warning mb-3">Pannello Master</h4>
+
+      <div class="card-fanta">
+        <h6>1. Logo Squadra Utenti</h6>
+        <select id="adm-sel-user-logo" class="form-select mb-2"><option value="">Seleziona Utente Attivo</option></select>
+        <input type="text" id="adm-user-logo-url" class="form-control" placeholder="URL Logo (i.imgur.com/...)" oninput="anteprima('adm-user-logo-url','prev-logo')">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <img id="prev-logo" src="" style="width:60px;height:60px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;display:none;">
+          <span id="prev-logo-stato" class="small"></span>
+        </div>
+        <button class="btn btn-sm btn-warning w-100" onclick="salvaLogoAdmin()">Salva Logo</button>
+      </div>
+
+      <div class="card-fanta">
+        <h6>2. Configurazione Bonus/Malus</h6>
+        <div class="small mb-1 text-white-50">Tipologie esistenti:</div>
+        <div id="adm-bonus-malus-list" class="mb-3"></div>
+        <div class="small mb-1 text-white-50">Crea nuova:</div>
+        <div class="d-flex gap-2 mb-2">
+          <input type="text" id="adm-new-bm-nome" class="form-control" placeholder="Es: Vittoria ALL">
+          <input type="number" id="adm-new-bm-val" class="form-control" style="width:80px" placeholder="Punti">
+        </div>
+        <button class="btn btn-sm btn-warning w-100 mb-3" onclick="creaNuovoBonusMalus()">+ Crea</button>
+        <div class="small mb-1 text-white-50">Assegna a giocatore:</div>
+        <select id="adm-bonus-p" class="form-select mb-2"><option value="">Seleziona Giocatore</option></select>
+        <select id="adm-bonus-type" class="form-select mb-2"><option value="">Seleziona Tipo Bonus</option></select>
+        <select id="adm-bonus-g" class="form-select mb-2"><option value="">Seleziona Giornata</option></select>
+        <div id="adm-bonus-feedback" class="small mb-2"></div>
+        <button id="btn-assegna-bonus" class="btn btn-sm btn-warning w-100" onclick="assegnaBonus()">Assegna Punti</button>
+        <div class="d-flex justify-content-between align-items-center mt-2 mb-1">
+          <span class="small text-white-50">Storico assegnazioni:</span>
+          <button class="btn btn-sm btn-outline-warning py-0" style="font-size:0.6rem" onclick="caricaStoricoBonus()">Aggiorna</button>
+        </div>
+        <div id="adm-bonus-storico" class="small mt-1"></div>
+        <hr style="border-color:var(--gold);margin:14px 0">
+        <div class="small mb-1 text-white-50">Calcola Punteggi Bonus Giornata:</div>
+        <div class="small text-white-50 mb-2" style="font-size:0.62rem">Somma i bonus/malus della giornata ai punti utente. Se un titolare risulta "Non Ha Giocato", al suo posto conta il sostituto in panchina con lo stesso ruolo (a cascata se anche lui non ha giocato; altrimenti 0 punti per quello slot).</div>
+        <select id="adm-bonus-calc-giornata" class="form-select mb-2"><option value="">Seleziona Giornata</option></select>
+        <div id="adm-bonus-calc-feedback" class="small mb-2"></div>
+        <button id="btn-calcola-bonus-giornata" class="btn btn-sm btn-success w-100" onclick="calcolaPunteggiBonusGiornata()">Calcola e Applica Punteggi Bonus</button>
+      </div>
+
+      <div class="card-fanta">
+        <h6>3. Gestione Giornate</h6>
+        <div class="small text-white-50 mb-2">Crea nuova giornata:</div>
+        <input type="text" id="adm-nuova-giornata-nome" class="form-control mb-2" placeholder="Es: Giornata 2">
+        <button class="btn btn-sm btn-warning w-100 mb-3" onclick="creaGiornata()">+ Crea Giornata</button>
+        <div class="small text-white-50 mb-1">Giornate esistenti:</div>
+        <div id="adm-lista-giornate"></div>
+      </div>
+
+      <div class="card-fanta">
+        <h6>4. Risultati Reali</h6>
+        <button class="btn btn-sm btn-outline-warning w-100 mb-2" onclick="apriEditPartiteGiornata()">Modifica Partite Giornata Selezionata</button>
+        <select id="adm-sel-g" class="form-select mb-2" onchange="aggiornaPartiteAdmin(this.value)"><option value="">Seleziona Giornata</option></select>
+        <select id="adm-sel-p" class="form-select mb-2" onchange="aggiornaBottoniAdmin()"><option value="">Seleziona Partita</option></select>
+        <div class="d-flex gap-2 mb-2">
+          <select id="adm-res-1" class="form-select form-select-sm" onchange="aggiornaSegnoAdmin()"></select>
+          <select id="adm-res-2" class="form-select form-select-sm" onchange="aggiornaSegnoAdmin()"></select>
+        </div>
+        <div id="adm-segno-display" class="text-center fw-bold mb-2" style="min-height:24px;font-size:1rem;"></div>
+        <select id="adm-dado-real" class="form-select form-select-sm mb-2">
+          <option value="Logo">Logo KingsCup</option>
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          <option value="4">4</option><option value="5">5</option>
+        </select>
+        <div id="adm-risultati-feedback" class="small mb-2"></div>
+        <button id="btn-invia-risultati" class="btn btn-sm btn-success w-100 mb-2" onclick="inviaRisultati()">Invia Risultati e Calcola Punti</button>
+        <div class="small text-white-50 mb-1">Risultati salvati:</div>
+        <div id="adm-risultati-salvati"></div>
+        <button class="btn btn-sm btn-outline-warning w-100 mt-2" onclick="caricaRisultatiSalvati()">Aggiorna lista risultati</button>
+        <button class="btn btn-sm btn-outline-info w-100 mt-1" style="font-size:0.65rem" onclick="caricaPronosticiDebug()">Mostra pronostici salvati</button>
+        <div id="adm-pronostici-debug" class="small mt-1"></div>
+      </div>
+
+      <div class="card-fanta">
+        <h6>5. Attivazione Utenti e Debug</h6>
+        <div id="admin-user-list"></div>
+        <hr style="border-color:var(--gold);margin:12px 0">
+        <div class="small text-white-50 mb-2">Tutti gli utenti (debug):</div>
+        <div id="admin-debug-table" class="small"></div>
+        <button class="btn btn-sm btn-outline-warning w-100 mt-2" onclick="caricaAdminData()">Aggiorna</button>
+        <button class="btn btn-sm btn-outline-info w-100 mt-2" onclick="testConnessioneGAS()">Test connessione GAS</button>
+        <div id="gas-test-result" class="small mt-2"></div>
+      </div>
+
+      <div class="card-fanta">
+        <h6>6. Aggiungi Calciatore/Allenatore</h6>
+        <input type="text" id="adm-nome" class="form-control" placeholder="Nome">
+        <input type="text" id="adm-team" class="form-control" placeholder="Squadra Reale">
+        <select id="adm-ruolo" class="form-select">
+          <option value="GK">POR</option><option value="D">DIF</option><option value="C">CEN</option>
+          <option value="A">ATT</option><option value="ALL">ALL</option><option value="PRES">PRES</option>
+        </select>
+        <input type="number" id="adm-costo" class="form-control" placeholder="Costo KingsChe Coins">
+        <input type="text" id="adm-foto-url" class="form-control" placeholder="URL Foto" oninput="anteprima('adm-foto-url','prev-player')">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <img id="prev-player" src="" style="width:60px;height:60px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;display:none;">
+          <span id="prev-player-stato" class="small"></span>
+        </div>
+        <button class="btn btn-warning w-100" onclick="adminAggiungiPlayer()">SALVA</button>
+      </div>
+
+      <div class="card-fanta">
+        <h6>7. Modifica / Elimina Listone</h6>
+        <div class="role-tabs mb-2">
+          <div class="role-tab active" id="adm-tab-A" onclick="adminFiltraListone('A',this)">ATT</div>
+          <div class="role-tab" id="adm-tab-C" onclick="adminFiltraListone('C',this)">CEN</div>
+          <div class="role-tab" id="adm-tab-D" onclick="adminFiltraListone('D',this)">DIF</div>
+          <div class="role-tab" id="adm-tab-GK" onclick="adminFiltraListone('GK',this)">POR</div>
+          <div class="role-tab" id="adm-tab-ALL" onclick="adminFiltraListone('ALL',this)">ALL</div>
+          <div class="role-tab" id="adm-tab-PRES" onclick="adminFiltraListone('PRES',this)">PRES</div>
+        </div>
+        <div id="adm-listone-edit"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY SCELTA -->
+  <div id="overlay-scelta">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 id="titolo-scelta" class="text-warning m-0">Scegli</h4>
+      <button class="btn btn-sm btn-outline-light" onclick="chiudiScelta()">CHIUDI</button>
+    </div>
+    <div id="lista-scelta-container"></div>
+  </div>
+
+  <!-- OVERLAY MODIFICA CALCIATORE -->
+  <div id="overlay-edit-player">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-warning m-0">Modifica Calciatore</h4>
+      <button class="btn btn-sm btn-outline-light" onclick="chiudiEditPlayer()">CHIUDI</button>
+    </div>
+    <div class="card-fanta">
+      <input type="hidden" id="edit-row-index">
+      <input type="text" id="edit-nome" class="form-control" placeholder="Nome">
+      <input type="text" id="edit-team" class="form-control" placeholder="Squadra">
+      <select id="edit-ruolo" class="form-select">
+        <option value="GK">POR</option><option value="D">DIF</option><option value="C">CEN</option>
+        <option value="A">ATT</option><option value="ALL">ALL</option><option value="PRES">PRES</option>
+      </select>
+      <input type="number" id="edit-costo" class="form-control" placeholder="Costo">
+      <input type="text" id="edit-foto" class="form-control" placeholder="URL Foto" oninput="anteprima('edit-foto','prev-edit')">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <img id="prev-edit" src="" style="width:60px;height:60px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;display:none;">
+        <span id="prev-edit-stato" class="small"></span>
+      </div>
+      <button id="btn-salva-edit-player" class="btn btn-success w-100 fw-bold" onclick="salvaModificaPlayer()">SALVA MODIFICHE</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY RESOCONTO BONUS -->
+  <div id="overlay-resoconto">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 id="titolo-resoconto" class="text-warning m-0">Resoconto Bonus</h4>
+      <button class="btn btn-sm btn-outline-light" onclick="chiudiResoconto()">CHIUDI</button>
+    </div>
+    <div id="resoconto-container"></div>
+  </div>
+
+  <!-- OVERLAY CONFERMA (generico, riusabile) -->
+  <div id="overlay-confirm">
+    <div class="card-fanta">
+      <p id="confirm-message" class="text-center mb-4"></p>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-light w-50" onclick="annullaConferma()">ANNULLA</button>
+        <button class="btn btn-warning w-50 fw-bold" onclick="confermaAzione()">CONFERMA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY MODIFICA UTENTE -->
+  <div id="overlay-edit-utente">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-warning m-0">Modifica Utente</h4>
+      <button class="btn btn-sm btn-outline-light" onclick="chiudiEditUtente()">CHIUDI</button>
+    </div>
+    <div class="card-fanta">
+      <input type="hidden" id="eu-username">
+      <div class="mb-2 text-white-50 small">Username: <b id="eu-username-label" class="text-white"></b></div>
+      <label class="small text-white-50">SC Coins</label>
+      <input type="number" id="eu-coins" class="form-control" placeholder="Coins">
+      <button id="btn-salva-edit-utente" class="btn btn-success w-100 fw-bold mt-2" onclick="salvaEditUtente()">SALVA MODIFICHE</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY SQUADRA UTENTE (vista/modifica admin) -->
+  <div id="overlay-squadra-admin">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 id="titolo-squadra-admin" class="text-warning m-0">Squadra di</h4>
+      <button class="btn btn-sm btn-outline-light" onclick="chiudiSquadraAdmin()">CHIUDI</button>
+    </div>
+    <div class="text-center mb-3">
+      <span class="badge border border-warning text-warning" id="admin-squadra-coins">0 KingsChe Coins</span>
+    </div>
+    <div id="admin-squadra-slots"></div>
+    <button class="btn btn-warning w-100 fw-bold mt-3 mb-5" onclick="salvaSquadraAdmin()">SALVA MODIFICHE SQUADRA</button>
+  </div>
+
+  <!-- OVERLAY INDICE BONUS/MALUS -->
+  <div id="overlay-indice-bonus">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-warning m-0">Tutti i Bonus/Malus</h4>
+      <button class="btn btn-sm btn-outline-light" onclick="chiudiIndiceBonusMalus()">CHIUDI</button>
+    </div>
+    <div id="indice-bonus-container"></div>
+  </div>
+
+  <nav class="nav-bottom">
+    <div class="nav-btn active" onclick="switchTab('sec-campo',this)"><i class="fas fa-tshirt"></i>Campo</div>
+    <div class="nav-btn" onclick="switchTab('sec-squadra',this)"><i class="fas fa-users"></i>Squadra</div>
+    <div class="nav-btn" onclick="switchTab('sec-classifica',this)"><i class="fas fa-list-ol"></i>Classifica</div>
+    <div class="nav-btn" id="admin-tab-btn" style="display:none" onclick="switchTab('sec-admin',this)"><i class="fas fa-cog"></i>Admin</div>
+  </nav>
+</div>
+
+<script>
+
+// ═══════════════════════════════════════════════════════════════
+// SHIM: google.script.run → fetch() verso l'API Apps Script
+// Si attiva SOLO se la pagina NON gira dentro Apps Script (es. ospitata
+// su GitHub Pages). Se gira dentro Apps Script (script.google.com),
+// l'oggetto "google" reale esiste già e questo blocco non fa nulla:
+// tutto il resto del codice resta identico in entrambi i casi.
+// ═══════════════════════════════════════════════════════════════
+(function() {
+  if (typeof google !== 'undefined' && google.script && google.script.run) return;
+
+  // Incolla qui l'URL del deploy Apps Script (Distribuisci → Gestisci
+  // distribuzioni → copia URL), che deve finire con /exec
+  var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzKbtBgdu7UDqNa02m9TA4nYCLqhq-sAGffm5fjDpLVCySSkH5_Mk9qwNYQphds38Zd/exec';
+
+  function creaChain(successHandler, failureHandler) {
+    return new Proxy({}, {
+      get: function(target, fnName) {
+        if (fnName === 'withSuccessHandler') {
+          return function(cb) { return creaChain(cb, failureHandler); };
+        }
+        if (fnName === 'withFailureHandler') {
+          return function(cb) { return creaChain(successHandler, cb); };
+        }
+        return function() {
+          var args = Array.prototype.slice.call(arguments);
+          fetch(GAS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ fn: fnName, args: args })
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data && data.error) {
+              if (failureHandler) failureHandler(data.error);
+              else console.error('Errore GAS:', data.error);
+            } else if (successHandler) {
+              successHandler(data ? data.result : undefined);
+            }
+          })
+          .catch(function(err) {
+            if (failureHandler) failureHandler(err.toString());
+            else console.error('Errore di rete verso Apps Script:', err);
+          });
+        };
+      }
+    });
+  }
+
+  window.google = window.google || {};
+  window.google.script = { run: creaChain(null, null) };
+})();
+
+var userData = { username:'', coins:0, isAdmin:false, isLocked:false, points:0, logo:'' };
+var calciatoriGenerali = [];
+var miaRosa = { GK:[null,null], D:[null,null,null,null], C:[null,null,null,null], A:[null,null,null], ALL:[null], PRES:[null] };
+var schieramento = {};
+var partiteGiornata = [];
+var giornataAttiva = null;
+var giornateLocked = false;
+var bonusMalusList = [];
+var storicoBonus = [];
+var adminRuoloAttivo = 'A';
+
+var PANCHINA_RUOLI = {
+  '3-2-1': ['GK','D','C','C','A','A'],
+  '2-2-2': ['GK','D','D','C','C','A'],
+  '2-3-1': ['GK','D','D','C','A','A'],
+  '3-1-2': ['GK','D','C','C','C','A']
+};
+var RUOLO_LABEL = { GK:'Portiere', D:'Difensore', C:'Centrocam.', A:'Attaccante', ALL:'Allenatore', PRES:'Presidente' };
+var RUOLO_MAP = { PORTIERE:'GK', DIFENSORE:'D', CENTROCAMPISTA:'C', ATTACCANTE:'A', ALLENATORE:'ALL', PRESIDENTE:'PRES', ALL_MIA_ROSA:'ALL_MIA_ROSA' };
+
+function getOptGol(max) {
+  var h = '';
+  for(var i=0; i<=max; i++) h += '<option value="'+i+'">'+i+'</option>';
+  return h;
+}
+
+function switchV(id) {
+  var views = document.querySelectorAll('div[id^="view-"]');
+  for(var i=0; i<views.length; i++) views[i].classList.add('hidden');
+  var t = document.getElementById(id);
+  if(t) t.classList.remove('hidden');
+}
+
+function entrateNellApp() { switchV('view-login'); }
+
+function eseguiLogin() {
+  var u = document.getElementById('l-user').value;
+  var p = document.getElementById('l-pass').value;
+  if(!u || !p) return alert('Dati mancanti!');
+  var btn = document.querySelector('#view-login .btn-warning');
+  if(btn) { btn.disabled=true; btn.innerText='Accesso...'; }
+  if(typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if(btn) { btn.disabled=false; btn.innerText='ENTRA'; }
+        if(res && res.status === 'SUCCESS') avviaApp(res);
+        else if(res && res.status === 'INATTIVO') alert('Account non attivo.');
+        else alert('Credenziali errate.');
+      })
+      .withFailureHandler(function(err) {
+        if(btn) { btn.disabled=false; btn.innerText='ENTRA'; }
+        alert('Errore GAS: ' + JSON.stringify(err));
+      })
+      .login(u, p);
+  } else {
+    if(btn) { btn.disabled=false; btn.innerText='ENTRA'; }
+    avviaApp({username:u, coins:150, isAdmin:true, logo:'', status:'SUCCESS'});
+  }
+}
+
+function avviaApp(res) {
+  userData.username = res.username;
+  userData.coins = res.coins;
+  userData.isAdmin = res.isAdmin;
+  userData.logo = res.logo || '';
+  document.getElementById('welcome-msg').innerText = '@' + res.username;
+  document.getElementById('user-coins-display').innerText = res.coins + ' KingsChe Coins';
+  var logoImg = document.getElementById('user-logo-display');
+  if(res.logo) { logoImg.src=res.logo; logoImg.classList.remove('hidden'); }
+  else logoImg.classList.add('hidden');
+  if(res.isAdmin) document.getElementById('admin-tab-btn').style.display='block';
+  switchV('view-app');
+  disegnaCampo();
+  // Flusso sequenziale: prima giornata attiva, poi dati (partite della giornata), poi formazione
+  caricaGiornataAttivaEAvvia();
+  // Carica la rosa definitiva salvata (se presente) e lo stato di blocco
+  caricaRosaUtente();
+}
+
+function switchTab(id, btn) {
+  var secs = document.querySelectorAll('div[id^="sec-"]');
+  for(var i=0; i<secs.length; i++) secs[i].classList.add('hidden');
+  var t = document.getElementById(id);
+  if(t) t.classList.remove('hidden');
+  var btns = document.querySelectorAll('.nav-btn');
+  for(var i=0; i<btns.length; i++) btns[i].classList.remove('active');
+  if(btn) btn.classList.add('active');
+  var hc = document.getElementById('header-coins');
+  if(id === 'sec-squadra') hc.classList.remove('hidden');
+  else hc.classList.add('hidden');
+  if(id === 'sec-classifica') caricaClassifica();
+  if(id === 'sec-squadra') disegnaMiaSquadra();
+  if(id === 'sec-admin') {
+    caricaAdminData();
+    caricaBonusMalus();
+    caricaListaGiornateAdmin();
+    caricaStoricoBonus();
+    var r1=document.getElementById('adm-res-1');
+    var r2=document.getElementById('adm-res-2');
+    if(r1 && !r1.innerHTML) { r1.innerHTML=getOptGol(30); r2.innerHTML=getOptGol(30); }
+  }
+}
+
+function eseguiReg() {
+  var dati = {
+    nome: document.getElementById('r-nome').value,
+    cognome: document.getElementById('r-cogn').value,
+    username: document.getElementById('r-user').value,
+    email: document.getElementById('r-mail').value,
+    password: document.getElementById('r-pass').value
+  };
+  if(!dati.username || !dati.password) return alert('Campi obbligatori mancanti!');
+  google.script.run.withSuccessHandler(function(res) {
+    if(res==='OK') { alert('Iscrizione inviata!\n\nPer completare la registrazione manda un messaggio al numero: 3887884169 per confermare l\'account'); switchV('view-login'); }
+    else alert(res);
+  }).registraUtente(dati);
+}
+
+// ===== GIORNATA ATTIVA =====
+// Carica giornata, poi dati (partite), poi formazione — tutto in sequenza
+function caricaGiornataEAvvia() {
+  if(typeof google === 'undefined') {
+    giornataAttiva = { id:1, nome:'Giornata 1', stato:'Attiva' };
+    aggiornaUIGiornata();
+    caricaTuttiIDati();
+    return;
+  }
+  try {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        giornataAttiva = res || null;
+        aggiornaUIGiornata();
+        // STEP 2: carica dati (partite della giornata attiva) e poi formazione
+        caricaTuttiIDatiEFormazione();
+      })
+      .withFailureHandler(function() {
+        giornataAttiva = null;
+        aggiornaUIGiornata();
+        caricaTuttiIDati();
+      })
+      .getGiornataAttiva();
+  } catch(e) {
+    giornataAttiva = null;
+    aggiornaUIGiornata();
+    caricaTuttiIDati();
+  }
+}
+
+// Alias per compatibilità (usato da attivaGiornata/chiudiGiornata)
+function caricaGiornataAttivaUtente() { caricaGiornataEAvvia(); }
+// Alias usato da avviaApp
+function caricaGiornataAttivaEAvvia() { caricaGiornataEAvvia(); }
+
+function caricaTuttiIDatiEFormazione() {
+  if(typeof google === 'undefined') { caricaTuttiIDati(); return; }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(!res) return;
+      calciatoriGenerali = res.calciatori;
+      // Partite SOLO dalla giornata attiva
+      partiteGiornata = (res.partite && res.partite.length > 0) ? res.partite : [];
+      filtraListone('A', document.getElementById('tab-A'));
+      // Ridisegna pronostici con le partite della giornata attiva
+      caricaGiornataAttiva();
+      if(document.getElementById('adm-listone-edit')) renderAdminListone();
+      // STEP 3: carica formazione della giornata
+      if(giornataAttiva) {
+        caricaFormazioneGiornata(giornataAttiva.id);
+      }
+    })
+    .withFailureHandler(function() { caricaTuttiIDati(); })
+    .getDatiIniziali();
+}
+
+function caricaFormazioneGiornata(gId) {
+  if(typeof google==='undefined') return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      // Azzera formazione attuale
+      schieramento = {};
+      // Ripristina il modulo salvato (serve per disegnare il campo e la panchina giusta)
+      if(res && res.modulo) {
+        var modSel = document.getElementById('modulo-select');
+        if(modSel) modSel.value = res.modulo;
+      }
+      // Carica formazione salvata per questa giornata
+      if(res && res.slots) {
+        Object.keys(res.slots).forEach(function(sid) {
+          schieramento[sid] = res.slots[sid];
+        });
+      }
+      disegnaCampo();
+      aggiornaPanchina();
+    })
+    .withFailureHandler(function() {
+      // Se non c'è formazione salvata, azzera e ridisegna vuota
+      schieramento = {};
+      disegnaCampo();
+      aggiornaPanchina();
+    })
+    .getFormazione(userData.username, gId);
+}
+
+function formazioneBloccata() {
+  return giornateLocked || !userData.isLocked;
+}
+
+function aggiornaUIGiornata() {
+  var label = document.getElementById('label-giornata-attuale');
+  var badge = document.getElementById('badge-giornata-stato');
+  var blk = document.getElementById('campo-bloccato-msg');
+  var btnS = document.getElementById('btn-salva-tutto');
+  var modSel = document.getElementById('modulo-select');
+  if(!giornataAttiva) {
+    if(label) label.innerText='Nessuna giornata attiva';
+    giornateLocked = true;
+  } else {
+    if(label) label.innerText = giornataAttiva.nome;
+    giornateLocked = (giornataAttiva.stato === 'Chiusa');
+    if(badge) {
+      badge.innerText = giornataAttiva.stato==='Attiva' ? 'Attiva' : 'Chiusa';
+      badge.style.cssText = 'background:'+(giornataAttiva.stato==='Attiva'?'#4caf50':'#f44336')+';color:white;padding:3px 8px;border-radius:10px;font-size:0.6rem';
+    }
+  }
+  var bloccata = formazioneBloccata();
+  if(blk) {
+    blk.innerText = !userData.isLocked
+      ? 'Completa e salva definitivamente la tua squadra (sezione Squadra) prima di poter schierare la formazione'
+      : 'Giornata chiusa - formazione non modificabile';
+    blk.classList.toggle('show', bloccata);
+  }
+  if(btnS) { btnS.disabled=bloccata; btnS.style.opacity=bloccata?'0.5':'1'; }
+  if(modSel) { modSel.disabled=bloccata; }
+}
+
+// ===== DATI =====
+function caricaTuttiIDati() {
+  if(typeof google === 'undefined') return;
+  google.script.run.withSuccessHandler(function(res) {
+    if(!res) return;
+    calciatoriGenerali = res.calciatori;
+    partiteGiornata = (res.partite && res.partite.length>0) ? res.partite : [];
+    filtraListone('A', document.getElementById('tab-A'));
+    caricaGiornataAttiva();
+    if(document.getElementById('adm-listone-edit')) renderAdminListone();
+  }).getDatiIniziali();
+}
+
+function caricaGiornataAttiva() {
+  var html = '';
+  var optG = getOptGol(30);
+  partiteGiornata.forEach(function(m, idx) {
+    html += '<div class="match-pred-box" id="pred-box-'+idx+'">';
+    html += '<div class="small fw-bold mb-2 text-warning">'+m+'</div>';
+    html += '<div class="small mb-1 text-white-50" style="font-size:0.6rem">Risultato Esatto (+10):</div>';
+    html += '<div class="d-flex align-items-center gap-2 mb-2">';
+    html += '<select id="pred-g1-'+idx+'" class="form-select form-select-sm">'+optG+'</select>';
+    html += '<span>-</span>';
+    html += '<select id="pred-g2-'+idx+'" class="form-select form-select-sm">'+optG+'</select>';
+    html += '</div>';
+    html += '<div class="small mb-1 text-white-50" style="font-size:0.6rem">Dado Kings (+5):</div>';
+    html += '<select id="pred-dado-'+idx+'" class="form-select form-select-sm">';
+    html += '<option value="" disabled selected>Indovina il Dado</option>';
+    html += '<option value="Logo">Logo KingsCup</option>';
+    html += '<option value="1">1</option><option value="2">2</option><option value="3">3</option>';
+    html += '<option value="4">4</option><option value="5">5</option>';
+    html += '</select></div>';
+  });
+  var t = document.getElementById('container-pronostici');
+  if(t) t.innerHTML = html;
+  if(userData.isAdmin) aggiornaPartiteAdmin(1);
+}
+
+// ===== SQUADRA =====
+function filtraListone(ruolo, btn) {
+  var tabs = document.querySelectorAll('.role-tab');
+  for(var i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
+  if(btn) btn.classList.add('active');
+  var filtered = calciatoriGenerali.slice(1).filter(function(c){ return c[2]===ruolo; });
+  filtered.sort(function(a,b){ return b[3]-a[3]; });
+  var t = document.getElementById('listone-container');
+  if(!t) return;
+  var html = '';
+  filtered.forEach(function(c) {
+    html += '<div class="player-list-item">';
+    html += '<div class="d-flex align-items-center">';
+    html += '<img src="'+(c[4]||'https://via.placeholder.com/40')+'" class="player-photo-mini">';
+    html += '<div><b>'+c[0]+'</b><br><small class="text-white-50">'+c[1]+'</small></div>';
+    html += '</div><div class="text-warning fw-bold">'+c[3]+' KC</div></div>';
+  });
+  t.innerHTML = html;
+}
+
+function getNomiGiaInRosa(escR, escI) {
+  var nomi = {};
+  var keys = Object.keys(miaRosa);
+  for(var i=0; i<keys.length; i++) {
+    var r = keys[i];
+    for(var j=0; j<miaRosa[r].length; j++) {
+      var p = miaRosa[r][j];
+      if(p && !(r===escR && j===escI)) nomi[p.nome] = true;
+    }
+  }
+  return nomi;
+}
+
+function disegnaMiaSquadra() {
+  var config = [
+    {r:'GK',l:'Portiere',n:2},{r:'D',l:'Difensore',n:4},{r:'C',l:'Centrocampista',n:4},
+    {r:'A',l:'Attaccante',n:3},{r:'ALL',l:'Allenatore',n:1},{r:'PRES',l:'Presidente',n:1}
+  ];
+  var html = '';
+  config.forEach(function(s) {
+    for(var i=0; i<s.n; i++) {
+      var p = miaRosa[s.r][i];
+      var imgSrc = p ? p.foto : 'https://via.placeholder.com/40';
+      var nome = p ? p.nome : (s.l + ' #' + (i+1));
+      html += '<div class="slot-vuoto">';
+      html += '<img src="'+imgSrc+'" class="slot-img">';
+      html += '<div class="flex-grow-1"><div class="fw-bold text-uppercase">'+nome+'</div></div>';
+      if(!userData.isLocked) {
+        if(p) html += '<button class="btn btn-sm btn-danger" onclick="rimuoviAcquisto(\''+s.r+'\','+i+')">RIMUOVI</button>';
+        else html += '<button class="btn btn-sm btn-warning" onclick="apriScelta(\''+s.r+'\','+i+')">SCEGLI</button>';
+      }
+      html += '</div>';
+    }
+  });
+  var t = document.getElementById('mia-squadra-slots');
+  if(t) t.innerHTML = html;
+
+  var msgEl = document.getElementById('squadra-bloccata-msg');
+  var btnSalva = document.getElementById('btn-salva-squadra-definitiva');
+  if(msgEl && btnSalva) {
+    if(userData.isLocked) {
+      msgEl.innerText = '✓ Squadra confermata definitivamente. Non è più modificabile.';
+      msgEl.classList.add('show');
+      btnSalva.style.display = 'none';
+    } else {
+      msgEl.classList.remove('show');
+      btnSalva.style.display = 'block';
+    }
+  }
+}
+
+// Ritorna true solo se tutti i 14 slot della rosa (GK 2, D 4, C 4, A 3, ALL 1, PRES 1) sono pieni
+function rosaCompleta() {
+  var completa = true;
+  Object.keys(miaRosa).forEach(function(r) {
+    miaRosa[r].forEach(function(p) { if(!p) completa = false; });
+  });
+  return completa;
+}
+
+function ruoliMancanti() {
+  var config = [
+    {r:'GK',l:'Portiere'},{r:'D',l:'Difensore'},{r:'C',l:'Centrocampista'},
+    {r:'A',l:'Attaccante'},{r:'ALL',l:'Allenatore'},{r:'PRES',l:'Presidente'}
+  ];
+  var mancanti = [];
+  config.forEach(function(s) {
+    var vuoti = miaRosa[s.r].filter(function(p){ return !p; }).length;
+    if(vuoti > 0) mancanti.push(s.l + ' (manca ' + vuoti + ')');
+  });
+  return mancanti;
+}
+
+function salvaSquadraDefinitiva() {
+  if(userData.isLocked) return alert('La squadra è già stata salvata definitivamente e non è più modificabile.');
+  if(!rosaCompleta()) {
+    alert('La squadra non è completa. Ruoli da completare: ' + ruoliMancanti().join(', '));
+    return;
+  }
+  chiediConferma('Confermi di voler salvare la squadra in modo DEFINITIVO? Dopo non potrai più modificarla, ma potrai iniziare a schierare la formazione.', function() {
+    if(typeof google==='undefined') {
+      userData.isLocked = true;
+      disegnaMiaSquadra();
+      aggiornaUIGiornata();
+      disegnaCampo();
+      aggiornaPanchina();
+      alert('Squadra salvata (demo)!');
+      return;
+    }
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if(res==='OK') {
+          userData.isLocked = true;
+          disegnaMiaSquadra();
+          aggiornaUIGiornata();
+          disegnaCampo();
+          aggiornaPanchina();
+          alert('Squadra salvata definitivamente! Ora puoi schierare i giocatori in formazione.');
+        } else alert('Errore: '+res);
+      })
+      .withFailureHandler(function(err){ alert('Errore GAS: '+JSON.stringify(err)); })
+      .salvaRosaDefinitiva(userData.username, miaRosa, userData.coins);
+  });
+}
+
+function caricaRosaUtente() {
+  if(typeof google==='undefined') return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(res && res.rosa) {
+        Object.keys(res.rosa).forEach(function(r) {
+          if(miaRosa.hasOwnProperty(r)) miaRosa[r] = res.rosa[r];
+        });
+      }
+      userData.isLocked = !!(res && res.bloccata);
+      disegnaMiaSquadra();
+      aggiornaUIGiornata();
+      disegnaCampo();
+      aggiornaPanchina();
+    })
+    .withFailureHandler(function(){})
+    .getRosaUtente(userData.username);
+}
+
+function apriScelta(ruolo, index) {
+  var t = document.getElementById('titolo-scelta');
+  if(t) t.innerText = 'Scegli ' + (RUOLO_LABEL[ruolo]||ruolo);
+  var giaInRosa = getNomiGiaInRosa(ruolo, index);
+  var filtered = calciatoriGenerali.slice(1).filter(function(c){ return c[2]===ruolo; });
+  filtered.sort(function(a,b){ return b[3]-a[3]; });
+  var html = '';
+  filtered.forEach(function(c) {
+    var occupato = giaInRosa[c[0]];
+    var nomeEsc = c[0].replace(/'/g,'&#39;');
+    var fotoEsc = (c[4]||'').replace(/'/g,'&#39;');
+    html += '<div class="player-list-item" style="'+(occupato?'opacity:0.4':'')+'">';
+    html += '<div class="d-flex align-items-center">';
+    html += '<img src="'+(c[4]||'https://via.placeholder.com/40')+'" class="player-photo-mini">';
+    html += '<div><b>'+c[0]+'</b><br><small>'+c[3]+' KC</small>';
+    if(occupato) html += '<br><small style="color:#f44336">Gia in rosa</small>';
+    html += '</div></div>';
+    if(!occupato) html += '<button class="btn btn-sm btn-warning" onclick="confermaAcquisto(\''+nomeEsc+'\',\''+ruolo+'\','+index+',\''+fotoEsc+'\','+c[3]+')">SCEGLI</button>';
+    else html += '<span class="text-white-50 small pe-2">V</span>';
+    html += '</div>';
+  });
+  var cont = document.getElementById('lista-scelta-container');
+  if(cont) cont.innerHTML = html;
+  document.getElementById('overlay-scelta').style.display = 'block';
+}
+
+function confermaAcquisto(nome, ruolo, index, foto, costo) {
+  if(userData.coins < costo) return alert('Coins insufficienti!');
+  miaRosa[ruolo][index] = { nome:nome, foto:foto, costo:costo };
+  userData.coins -= costo;
+  document.getElementById('user-coins-display').innerText = userData.coins + ' KingsChe Coins';
+  chiudiScelta(); disegnaMiaSquadra(); disegnaCampo();
+}
+
+function rimuoviAcquisto(ruolo, index) {
+  var p = miaRosa[ruolo][index];
+  if(p) userData.coins += p.costo;
+  document.getElementById('user-coins-display').innerText = userData.coins + ' KingsChe Coins';
+  miaRosa[ruolo][index] = null;
+  disegnaMiaSquadra(); disegnaCampo();
+}
+
+// ===== ADMIN: VISTA/MODIFICA SQUADRA DI UN UTENTE =====
+var adminSquadraTarget = { username: null, rosa: null, coins: 0 };
+
+function apriSquadraAdmin(username) {
+  if(typeof google==='undefined') return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(!res || !res.rosa) { alert('Nessuna squadra salvata per @'+username+'.'); return; }
+      adminSquadraTarget.username = username;
+      adminSquadraTarget.rosa = res.rosa;
+      adminSquadraTarget.coins = Number(res.coins)||0;
+      document.getElementById('titolo-squadra-admin').innerText = 'Squadra di @' + username;
+      disegnaSquadraAdmin();
+      document.getElementById('overlay-squadra-admin').style.display = 'block';
+    })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .getRosaUtente(username);
+}
+
+function chiudiSquadraAdmin() { document.getElementById('overlay-squadra-admin').style.display='none'; }
+
+function disegnaSquadraAdmin() {
+  var config = [
+    {r:'GK',l:'Portiere',n:2},{r:'D',l:'Difensore',n:4},{r:'C',l:'Centrocampista',n:4},
+    {r:'A',l:'Attaccante',n:3},{r:'ALL',l:'Allenatore',n:1},{r:'PRES',l:'Presidente',n:1}
+  ];
+  var rosa = adminSquadraTarget.rosa;
+  var html = '';
+  config.forEach(function(s) {
+    for(var i=0; i<s.n; i++) {
+      var p = rosa[s.r][i];
+      var imgSrc = p ? p.foto : 'https://via.placeholder.com/40';
+      var nome = p ? p.nome : (s.l + ' #' + (i+1));
+      html += '<div class="slot-vuoto">';
+      html += '<img src="'+imgSrc+'" class="slot-img">';
+      html += '<div class="flex-grow-1"><div class="fw-bold text-uppercase">'+nome+'</div></div>';
+      if(p) html += '<button class="btn btn-sm btn-danger" onclick="rimuoviAcquistoAdmin(\''+s.r+'\','+i+')">RIMUOVI</button>';
+      else html += '<button class="btn btn-sm btn-warning" onclick="apriSceltaAdmin(\''+s.r+'\','+i+')">SCEGLI</button>';
+      html += '</div>';
+    }
+  });
+  var t = document.getElementById('admin-squadra-slots');
+  if(t) t.innerHTML = html;
+  document.getElementById('admin-squadra-coins').innerText = adminSquadraTarget.coins + ' KingsChe Coins';
+}
+
+function getNomiGiaInRosaAdmin(escR, escI) {
+  var nomi = {};
+  var rosa = adminSquadraTarget.rosa;
+  Object.keys(rosa).forEach(function(r) {
+    rosa[r].forEach(function(p, j) {
+      if(p && !(r===escR && j===escI)) nomi[p.nome] = true;
+    });
+  });
+  return nomi;
+}
+
+function apriSceltaAdmin(ruolo, index) {
+  var t = document.getElementById('titolo-scelta');
+  if(t) t.innerText = 'Scegli ' + (RUOLO_LABEL[ruolo]||ruolo);
+  var giaInRosa = getNomiGiaInRosaAdmin(ruolo, index);
+  var filtered = calciatoriGenerali.slice(1).filter(function(c){ return c[2]===ruolo; });
+  filtered.sort(function(a,b){ return b[3]-a[3]; });
+  var html = '';
+  filtered.forEach(function(c) {
+    var occupato = giaInRosa[c[0]];
+    var nomeEsc = c[0].replace(/'/g,'&#39;');
+    var fotoEsc = (c[4]||'').replace(/'/g,'&#39;');
+    html += '<div class="player-list-item" style="'+(occupato?'opacity:0.4':'')+'">';
+    html += '<div class="d-flex align-items-center">';
+    html += '<img src="'+(c[4]||'https://via.placeholder.com/40')+'" class="player-photo-mini">';
+    html += '<div><b>'+c[0]+'</b><br><small>'+c[3]+' KC</small>';
+    if(occupato) html += '<br><small style="color:#f44336">Gia in rosa</small>';
+    html += '</div></div>';
+    if(!occupato) html += '<button class="btn btn-sm btn-warning" onclick="confermaAcquistoAdmin(\''+nomeEsc+'\',\''+ruolo+'\','+index+',\''+fotoEsc+'\','+c[3]+')">SCEGLI</button>';
+    else html += '<span class="text-white-50 small pe-2">V</span>';
+    html += '</div>';
+  });
+  var cont = document.getElementById('lista-scelta-container');
+  if(cont) cont.innerHTML = html;
+  document.getElementById('overlay-scelta').style.display = 'block';
+}
+
+function confermaAcquistoAdmin(nome, ruolo, index, foto, costo) {
+  if(adminSquadraTarget.coins < costo) return alert('Coins insufficienti per questo utente!');
+  adminSquadraTarget.rosa[ruolo][index] = { nome:nome, foto:foto, costo:costo };
+  adminSquadraTarget.coins -= costo;
+  chiudiScelta(); disegnaSquadraAdmin();
+}
+
+function rimuoviAcquistoAdmin(ruolo, index) {
+  var p = adminSquadraTarget.rosa[ruolo][index];
+  if(p) adminSquadraTarget.coins += p.costo;
+  adminSquadraTarget.rosa[ruolo][index] = null;
+  disegnaSquadraAdmin();
+}
+
+function salvaSquadraAdmin() {
+  var username = adminSquadraTarget.username;
+  chiediConferma('Confermi di voler salvare le modifiche alla squadra di @'+username+'?', function() {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if(res==='OK') {
+          alert('Squadra di @'+username+' aggiornata!');
+          chiudiSquadraAdmin();
+          caricaAdminData();
+        } else alert('Errore: '+res);
+      })
+      .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+      .adminAggiornaRosaUtente(username, adminSquadraTarget.rosa, adminSquadraTarget.coins);
+  });
+}
+
+// ===== CAMPO =====
+function disegnaCampo() {
+  var field = document.getElementById('soccer-field');
+  if(!field) return;
+  var modSel = document.getElementById('modulo-select');
+  if(modSel && !modSel.value) return;
+  field.innerHTML = '';
+  aggiornaPanchina();
+  createSlot('PRESIDENTE',{top:'10px',right:'10px'},'PRESIDENTE','PRES_1');
+  createSlot('PORTIERE',{bottom:'10px',left:'145px'},'PORTIERE','GK_1');
+  createSlot('ALLENATORE',{top:'10px',left:'10px'},'ALLENATORE','ALL_1');
+  var mod = document.getElementById('modulo-select').value;
+  var layouts = {
+    '3-2-1': [{b:90,l:30,r:'DIFENSORE',id:'D_1'},{b:90,l:145,r:'DIFENSORE',id:'D_2'},{b:90,l:260,r:'DIFENSORE',id:'D_3'},{b:220,l:70,r:'CENTROCAMPISTA',id:'C_1'},{b:220,l:220,r:'CENTROCAMPISTA',id:'C_2'},{b:350,l:145,r:'ATTACCANTE',id:'A_1'}],
+    '2-2-2': [{b:90,l:80,r:'DIFENSORE',id:'D_1'},{b:90,l:220,r:'DIFENSORE',id:'D_2'},{b:220,l:80,r:'CENTROCAMPISTA',id:'C_1'},{b:220,l:220,r:'CENTROCAMPISTA',id:'C_2'},{b:350,l:80,r:'ATTACCANTE',id:'A_1'},{b:350,l:220,r:'ATTACCANTE',id:'A_2'}],
+    '2-3-1': [{b:90,l:80,r:'DIFENSORE',id:'D_1'},{b:90,l:220,r:'DIFENSORE',id:'D_2'},{b:220,l:30,r:'CENTROCAMPISTA',id:'C_1'},{b:220,l:145,r:'CENTROCAMPISTA',id:'C_2'},{b:220,l:260,r:'CENTROCAMPISTA',id:'C_3'},{b:350,l:145,r:'ATTACCANTE',id:'A_1'}],
+    '3-1-2': [{b:90,l:30,r:'DIFENSORE',id:'D_1'},{b:90,l:145,r:'DIFENSORE',id:'D_2'},{b:90,l:260,r:'DIFENSORE',id:'D_3'},{b:220,l:145,r:'CENTROCAMPISTA',id:'C_1'},{b:350,l:80,r:'ATTACCANTE',id:'A_1'},{b:350,l:220,r:'ATTACCANTE',id:'A_2'}]
+  };
+  (layouts[mod]||[]).forEach(function(p){ createSlot(p.r,{bottom:p.b+'px',left:p.l+'px'},p.r,p.id); });
+}
+
+function createSlot(role, pos, label, id) {
+  var div = document.createElement('div');
+  div.className = 'player-slot';
+  Object.assign(div.style, pos);
+  var p = schieramento[id];
+  var icon = document.createElement('div');
+  icon.className = 'player-icon';
+  icon.id = id;
+  if(p && p.foto) { icon.style.backgroundImage="url('"+p.foto+"')"; icon.style.backgroundSize='cover'; icon.style.backgroundPosition='center'; }
+  else icon.innerText = '?';
+  if(formazioneBloccata()) {
+    icon.style.pointerEvents = 'none';
+    icon.style.opacity = '0.6';
+  } else {
+    icon.onclick = (function(sid,srole){ return function(){ apriSceltaCampo(sid,srole); }; })(id,role);
+  }
+  var tag = document.createElement('div');
+  tag.className = 'player-name-tag text-uppercase';
+  tag.innerText = p ? p.nome : label;
+  div.appendChild(icon); div.appendChild(tag);
+  document.getElementById('soccer-field').appendChild(div);
+}
+
+function rimuoviDaPanchina(slotId) {
+  delete schieramento[slotId];
+  aggiornaPanchina();
+}
+
+function aggiornaPanchina() {
+  var container = document.getElementById('panchina-container');
+  if(!container) return;
+  container.innerHTML = '';
+  var mod = (document.getElementById('modulo-select')||{}).value || '';
+  var ruoliSlot = PANCHINA_RUOLI[mod] || ['GK','D','C','C','A','A'];
+  for(var i=1; i<=6; i++) {
+    var slotId = 'panchina_' + i;
+    var ruolo = ruoliSlot[i-1];
+    var p = schieramento[slotId];
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'text-align:center;width:60px;position:relative;';
+
+    var icon = document.createElement('div');
+    icon.className = 'player-icon';
+    icon.id = slotId;
+
+    if(formazioneBloccata()) {
+      icon.style.pointerEvents = 'none';
+      icon.style.opacity = '0.6';
+    } else if(p) {
+      // Slot occupato: click mostra popup con solo RIMUOVI
+      icon.onclick = (function(sid){ return function(){ mostraRimuoviPanchina(sid); }; })(slotId);
+    } else {
+      // Slot vuoto: click apre selezione giocatore per quel ruolo
+      icon.onclick = (function(sid,r){ return function(){ apriSceltaCampo(sid,r); }; })(slotId,ruolo);
+    }
+
+    if(p && p.foto) {
+      icon.style.backgroundImage = "url('"+p.foto+"')";
+      icon.style.backgroundSize = 'cover';
+      icon.style.backgroundPosition = 'center';
+      icon.innerText = '';
+    } else {
+      icon.style.fontSize = '0.55rem';
+      icon.style.color = '#888';
+      icon.innerText = RUOLO_LABEL[ruolo] || ruolo;
+    }
+
+    var tag = document.createElement('div');
+    tag.className = 'player-name-tag text-uppercase';
+    tag.style.cssText = 'font-size:0.45rem;margin-top:3px;';
+    tag.innerText = p ? p.nome : (RUOLO_LABEL[ruolo]||ruolo);
+
+    wrap.appendChild(icon);
+    wrap.appendChild(tag);
+    container.appendChild(wrap);
+  }
+}
+
+function mostraRimuoviPanchina(slotId) {
+  var p = schieramento[slotId];
+  if(!p) return;
+  // Usa l'overlay di scelta per mostrare solo il bottone rimuovi
+  document.getElementById('titolo-scelta').innerText = p.nome;
+  document.getElementById('lista-scelta-container').innerHTML =
+    '<div class="player-list-item">' +
+      '<div class="d-flex align-items-center">' +
+        '<img src="'+(p.foto||'https://via.placeholder.com/40')+'" class="player-photo-mini">' +
+        '<div><b>'+p.nome+'</b><br><small class="text-white-50">In panchina</small></div>' +
+      '</div>' +
+      '<button class="btn btn-sm btn-danger" onclick="rimuoviDaPanchina(\'' + slotId + '\'); chiudiScelta();">RIMUOVI</button>' +
+    '</div>';
+  document.getElementById('overlay-scelta').style.display = 'block';
+}
+
+function apriSceltaCampo(id, rLab) {
+  var CODICI_VALIDI = {GK:1,D:1,C:1,A:1,ALL:1,PRES:1};
+  var rC = CODICI_VALIDI[rLab] ? rLab : (RUOLO_MAP[rLab] || rLab);
+
+  // Se lo slot è già occupato: mostra opzione rimuovi + lista per sostituire
+  var slotAttuale = schieramento[id];
+
+  // Tutti gli slot occupati da altri (per evidenziare "già schierato")
+  var giaSchierati = {};
+  Object.keys(schieramento).forEach(function(sid){
+    if(sid!==id && schieramento[sid]) giaSchierati[schieramento[sid].nome]=true;
+  });
+
+  var list = [];
+  if(rC==='ALL_MIA_ROSA') {
+    Object.keys(miaRosa).forEach(function(r){ miaRosa[r].forEach(function(p){ if(p) list.push(p); }); });
+  } else {
+    list = (miaRosa[rC]||[]).filter(function(p){ return p!==null; });
+  }
+  if(list.length===0 && !slotAttuale) return alert('Nessun giocatore disponibile per questo ruolo! Aggiungi prima nella sezione Squadra.');
+
+  var html = '';
+
+  // Se slot occupato: bottone RIMUOVI in cima
+  if(slotAttuale) {
+    html += '<div class="card-fanta mb-3 p-2 d-flex align-items-center justify-content-between">';
+    html += '<div class="d-flex align-items-center">';
+    html += '<img src="'+(slotAttuale.foto||'https://via.placeholder.com/40')+'" class="player-photo-mini">';
+    html += '<div><b>'+slotAttuale.nome+'</b><br><small class="text-warning">Attuale</small></div>';
+    html += '</div>';
+    html += '<button class="btn btn-sm btn-danger" onclick="rimuoviDalCampo(\'' + id + '\')">🗑 Rimuovi</button>';
+    html += '</div>';
+    if(list.length > 0) {
+      html += '<div class="small text-white-50 mb-2">Oppure sostituisci con:</div>';
+    }
+  }
+
+  list.forEach(function(p) {
+    var occ = giaSchierati[p.nome];
+    var nomeEsc = p.nome.replace(/'/g,'&#39;');
+    var fotoEsc = (p.foto||'').replace(/'/g,'&#39;');
+    html += '<div class="player-list-item">';
+    html += '<div class="d-flex align-items-center">';
+    html += '<img src="'+(p.foto||'https://via.placeholder.com/40')+'" class="player-photo-mini">';
+    html += '<div><b>'+p.nome+'</b>';
+    if(occ) html += '<br><small style="color:#f44336">Gia in un altro slot — verrà spostato</small>';
+    html += '</div></div>';
+    // Tutti i giocatori sono schierabili — se già in un altro slot, viene spostato automaticamente
+    html += '<button class="btn btn-sm btn-warning" onclick="schieraInCampo(\'' + id + '\',\'' + nomeEsc + '\',\'' + fotoEsc + '\')">' + 'SCHIERA</button>';
+    html += '</div>';
+  });
+
+  document.getElementById('titolo-scelta').innerText = 'Scegli '+(RUOLO_LABEL[rC]||rLab);
+  document.getElementById('lista-scelta-container').innerHTML = html;
+  document.getElementById('overlay-scelta').style.display = 'block';
+}
+
+function rimuoviDalCampo(id) {
+  delete schieramento[id];
+  chiudiScelta();
+  disegnaCampo();
+  aggiornaPanchina();
+}
+
+function schieraInCampo(id, n, f) {
+  // Se il giocatore è già in un altro slot, rimuovilo da lì (spostamento)
+  Object.keys(schieramento).forEach(function(sid) {
+    if(sid !== id && schieramento[sid] && schieramento[sid].nome === n) {
+      delete schieramento[sid];
+    }
+  });
+  schieramento[id] = { nome:n, foto:f };
+  chiudiScelta();
+  disegnaCampo();
+  aggiornaPanchina();
+}
+function chiudiScelta() { document.getElementById('overlay-scelta').style.display='none'; }
+
+function switchSquadraSub(s) {
+  document.getElementById('sub-mia-squadra').classList.toggle('hidden', s==='listone');
+  document.getElementById('sub-listone').classList.toggle('hidden', s==='mia-squadra');
+  document.getElementById('btn-mia-squadra').classList.toggle('active', s==='mia-squadra');
+  document.getElementById('btn-listone').classList.toggle('active', s==='listone');
+}
+
+// ===== SALVA PRONOSTICI =====
+var LAYOUT_RUOLI = {
+  '3-2-1': ['D_1','D_2','D_3','C_1','C_2','A_1'],
+  '2-2-2': ['D_1','D_2','C_1','C_2','A_1','A_2'],
+  '2-3-1': ['D_1','D_2','C_1','C_2','C_3','A_1'],
+  '3-1-2': ['D_1','D_2','D_3','C_1','A_1','A_2']
+};
+
+function formazioneCompleta() {
+  var mod = document.getElementById('modulo-select').value;
+  if(!mod) return false;
+  var slotsRichiesti = ['PRES_1','GK_1','ALL_1'].concat(LAYOUT_RUOLI[mod] || []);
+  return slotsRichiesti.every(function(sid){ return !!schieramento[sid]; });
+}
+
+function pronosticiCompleti() {
+  if(partiteGiornata.length === 0) return true;
+  return partiteGiornata.every(function(m, idx) {
+    var dado = document.getElementById('pred-dado-'+idx);
+    return dado && dado.value !== '';
+  });
+}
+
+function salvaTutto() {
+  if(typeof google==='undefined') return alert('Demo mode');
+  if(!userData.isLocked) return alert('Devi prima completare e salvare definitivamente la tua squadra (sezione Squadra).');
+  if(giornateLocked) return alert('La giornata è chiusa, non puoi modificare la formazione.');
+  if(!document.getElementById('modulo-select').value) return alert('Seleziona un modulo prima di salvare!');
+  if(!formazioneCompleta()) return alert('Devi schierare tutti i ruoli della formazione prima di salvare!');
+  if(!pronosticiCompleti()) return alert('Devi inserire il pronostico (Dado Kings) per tutte le partite prima di salvare!');
+  var btn = document.getElementById('btn-salva-tutto');
+  btn.disabled=true; btn.innerText='Salvataggio...';
+  var pronostici = partiteGiornata.map(function(m,idx) {
+    var g1 = document.getElementById('pred-g1-'+idx);
+    var g2 = document.getElementById('pred-g2-'+idx);
+    var dado = document.getElementById('pred-dado-'+idx);
+    return { partita:m, gol1:g1?parseInt(g1.value):0, gol2:g2?parseInt(g2.value):0, dado:dado?dado.value:'Logo' };
+  });
+  var gId = giornataAttiva ? giornataAttiva.id : 1;
+  // Serializza formazione (schieramento titolare)
+  var formazioneSlots = {};
+  Object.keys(schieramento).forEach(function(sid) {
+    if(schieramento[sid]) formazioneSlots[sid] = schieramento[sid];
+  });
+  var modulo = document.getElementById('modulo-select').value || '';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled=false; btn.innerText='SALVA TUTTO';
+      if(res==='OK') alert('Salvato!');
+      else alert('Errore: '+res);
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled=false; btn.innerText='SALVA TUTTO';
+      alert('Errore GAS: '+JSON.stringify(err));
+    })
+    .salvaTutto(userData.username, gId, pronostici, formazioneSlots, modulo);
+}
+
+// ===== CLASSIFICA =====
+function caricaClassifica() {
+  if(typeof google==='undefined') return;
+  google.script.run.withSuccessHandler(function(res) {
+    if(!res) return;
+    var ADMIN_EMAIL = 'tommasocarrera.uni@gmail.com';
+    var users = res.filter(function(u){
+      if(u[0]==='Nome') return false;             // riga di intestazione
+      if(u[5]!=='Attivo') return false;            // solo utenti attivati
+      var isRigaAdmin = String(u[3]||'').trim().toLowerCase() === ADMIN_EMAIL;
+      if(isRigaAdmin && !userData.isAdmin) return false; // l'admin resta invisibile agli altri utenti
+      return true;
+    }).sort(function(a,b){ return b[7]-a[7]; });
+    var pos = users.findIndex(function(u){ return u[2]===userData.username; })+1;
+    var userRow = users.find(function(u){ return u[2]===userData.username; })||[];
+    document.getElementById('my-rank-display').innerHTML = 'Posizione: '+pos+' | Punti: '+(userRow[7]||0);
+    var body = document.getElementById('classifica-body');
+    if(body) {
+      var html = '';
+      users.forEach(function(u,i) {
+        var uNomeEsc = String(u[2]).replace(/'/g,'&#39;');
+        html += '<tr style="cursor:pointer" onclick="apriResocontoUtente(\''+uNomeEsc+'\')"><td>'+(i+1)+'</td><td><div class="d-flex align-items-center">';
+        html += '<img src="'+(u[8]||'https://via.placeholder.com/40')+'" class="player-photo-mini" style="width:25px;height:25px;margin-right:8px;">';
+        html += u[2]+'</div></td>';
+        html += '<td class="text-end text-warning">'+u[7]+'</td></tr>';
+      });
+      body.innerHTML = html;
+    }
+  }).getData('Utenti');
+}
+
+// ===== CONFERMA GENERICA (overlay CONFERMA/ANNULLA riusabile) =====
+var _azioneConfermata = null;
+
+function chiediConferma(messaggio, callback) {
+  document.getElementById('confirm-message').innerText = messaggio;
+  _azioneConfermata = callback;
+  document.getElementById('overlay-confirm').style.display = 'flex';
+}
+
+function confermaAzione() {
+  document.getElementById('overlay-confirm').style.display = 'none';
+  var cb = _azioneConfermata;
+  _azioneConfermata = null;
+  if(cb) cb();
+}
+
+function annullaConferma() {
+  document.getElementById('overlay-confirm').style.display = 'none';
+  _azioneConfermata = null;
+}
+
+// ===== INDICE BONUS/MALUS (visibile a tutti dalla sezione Formazione) =====
+function chiudiIndiceBonusMalus() { document.getElementById('overlay-indice-bonus').style.display='none'; }
+
+function apriIndiceBonusMalus() {
+  var cont = document.getElementById('indice-bonus-container');
+  cont.innerHTML = '<div class="text-white-50 small">Caricamento...</div>';
+  document.getElementById('overlay-indice-bonus').style.display = 'block';
+  if(typeof google==='undefined') return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var righe = (res||[]).slice(1)
+        .map(function(r){ return { nome:String(r[0]||''), valore:Number(r[1]||0) }; })
+        .filter(function(b){ return b.nome && b.nome.trim().toLowerCase()!=='non ha giocato'; });
+
+      var bonus = righe.filter(function(b){ return b.valore > 0; }).sort(function(a,b){ return b.valore-a.valore; });
+      var malus = righe.filter(function(b){ return b.valore < 0; }).sort(function(a,b){ return a.valore-b.valore; });
+
+      var html = '';
+
+      html += '<div class="card-fanta">';
+      html += '<h6 class="text-warning mb-2"><i class="fas fa-dice"></i> Punti Pronostici</h6>';
+      html += '<div class="d-flex justify-content-between small mb-1" style="border-bottom:1px solid rgba(255,255,255,0.08);padding:3px 0">';
+      html += '<span>Risultato Esatto</span><span style="color:#4caf50">+10 pt</span></div>';
+      html += '<div class="d-flex justify-content-between small" style="padding:3px 0">';
+      html += '<span>Dado Kings (indovinato)</span><span style="color:#4caf50">+5 pt</span></div>';
+      html += '</div>';
+
+      html += '<div class="card-fanta">';
+      html += '<h6 class="text-warning mb-2"><i class="fas fa-arrow-up"></i> Bonus</h6>';
+      if(bonus.length===0) html += '<div class="text-white-50 small">Nessun bonus configurato</div>';
+      else bonus.forEach(function(b) {
+        html += '<div class="d-flex justify-content-between small mb-1" style="border-bottom:1px solid rgba(255,255,255,0.08);padding:3px 0">';
+        html += '<span>'+b.nome+'</span><span style="color:#4caf50">+'+b.valore+' pt</span></div>';
+      });
+      html += '</div>';
+
+      html += '<div class="card-fanta">';
+      html += '<h6 class="text-warning mb-2"><i class="fas fa-arrow-down"></i> Malus</h6>';
+      if(malus.length===0) html += '<div class="text-white-50 small">Nessun malus configurato</div>';
+      else malus.forEach(function(b) {
+        html += '<div class="d-flex justify-content-between small mb-1" style="border-bottom:1px solid rgba(255,255,255,0.08);padding:3px 0">';
+        html += '<span>'+b.nome+'</span><span style="color:#f44336">'+b.valore+' pt</span></div>';
+      });
+      html += '</div>';
+
+      cont.innerHTML = html;
+    })
+    .withFailureHandler(function(){ cont.innerHTML='<div class="text-danger small">Errore nel caricamento.</div>'; })
+    .getData('Bonus_Malus');
+}
+
+// ===== RESOCONTO BONUS (visibile a tutti dalla Classifica) =====
+function chiudiResoconto() { document.getElementById('overlay-resoconto').style.display='none'; }
+
+function apriResocontoGenerale() {
+  document.getElementById('titolo-resoconto').innerText = 'Resoconto Bonus/Malus - Tutti i Giocatori';
+  var cont = document.getElementById('resoconto-container');
+  cont.innerHTML = '<div class="text-white-50 small">Caricamento...</div>';
+  document.getElementById('overlay-resoconto').style.display = 'block';
+  if(typeof google==='undefined') return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(!res || res.length===0) { cont.innerHTML='<div class="text-white-50 small">Nessun bonus assegnato finora.</div>'; return; }
+      var html = '';
+      res.forEach(function(g) {
+        html += '<div class="card-fanta">';
+        html += '<h6 class="text-warning mb-2">'+g.nomeGiornata+'</h6>';
+        g.voci.forEach(function(v) {
+          var col = v.punti >= 0 ? '#4caf50' : '#f44336';
+          html += '<div class="d-flex justify-content-between small mb-1" style="border-bottom:1px solid rgba(255,255,255,0.08);padding:3px 0">';
+          html += '<span><b>'+v.giocatore+'</b> - '+v.tipo+'</span>';
+          html += '<span style="color:'+col+'">'+(v.punti>=0?'+':'')+v.punti+' pt</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+      cont.innerHTML = html;
+    })
+    .withFailureHandler(function(){ cont.innerHTML='<div class="text-danger small">Errore nel caricamento.</div>'; })
+    .getResocontoBonusGenerale();
+}
+
+function apriResocontoUtente(username) {
+  document.getElementById('titolo-resoconto').innerText = 'Resoconto Bonus - ' + username;
+  var cont = document.getElementById('resoconto-container');
+  cont.innerHTML = '<div class="text-white-50 small">Caricamento...</div>';
+  document.getElementById('overlay-resoconto').style.display = 'block';
+  if(typeof google==='undefined') return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(!res || res.length===0) { cont.innerHTML='<div class="text-white-50 small">Nessuna formazione trovata per questo utente.</div>'; return; }
+      var html = '';
+      var totale = 0;
+      res.forEach(function(r) {
+        totale += r.punti;
+        var col = r.punti >= 0 ? '#4caf50' : '#f44336';
+        html += '<div class="card-fanta">';
+        html += '<div class="d-flex justify-content-between align-items-center mb-1">';
+        html += '<h6 class="text-warning m-0">'+r.nomeGiornata+'</h6>';
+        html += '<span style="color:'+col+';font-weight:bold">'+(r.punti>=0?'+':'')+r.punti+' pt</span>';
+        html += '</div>';
+        html += '<div class="small text-white-50">'+r.motivo+'</div>';
+        html += '</div>';
+      });
+      html += '<div class="text-center text-warning fw-bold mt-2">Totale bonus/malus: '+(totale>=0?'+':'')+totale+' pt</div>';
+      cont.innerHTML = html;
+    })
+    .withFailureHandler(function(){ cont.innerHTML='<div class="text-danger small">Errore nel caricamento.</div>'; })
+    .getResocontoBonusUtente(username);
+}
+
+// ===== ADMIN: GIORNATE =====
+function creaGiornata() {
+  var nome = document.getElementById('adm-nuova-giornata-nome').value.trim();
+  if(!nome) return alert('Inserisci il nome!');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(res && res.ok) { document.getElementById('adm-nuova-giornata-nome').value=''; caricaListaGiornateAdmin(); }
+      else alert('Errore: '+(res?res.msg:''));
+    })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .creaGiornata(nome);
+}
+
+function caricaListaGiornateAdmin() {
+  if(typeof google==='undefined') return;
+  var el = document.getElementById('adm-lista-giornate');
+  if(!el) return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var opts = '<option value="">Seleziona Giornata</option>';
+      (res||[]).forEach(function(g){ opts += '<option value="'+g.id+'">'+g.nome+' ('+g.stato+')</option>'; });
+
+      ['adm-sel-g','adm-bonus-g','adm-bonus-calc-giornata'].forEach(function(selId) {
+        var sel = document.getElementById(selId);
+        if(!sel) return;
+        var valorePrecedente = sel.value;
+        sel.innerHTML = opts;
+        if(valorePrecedente && sel.querySelector('option[value="'+valorePrecedente+'"]')) {
+          sel.value = valorePrecedente;
+        }
+      });
+
+      if(!res || res.length===0) { el.innerHTML='<span class="text-white-50 small">Nessuna giornata</span>'; return; }
+      var html = '';
+      res.forEach(function(g) {
+        var col = g.stato==='Attiva'?'#4caf50':(g.stato==='Chiusa'?'#f44336':'#aaa');
+        var btn = g.stato==='Attiva'
+          ? '<button class="btn btn-sm btn-warning py-0" style="font-size:0.65rem" onclick="chiudiGiornata('+g.id+')">Stop</button>'
+          : '<button class="btn btn-sm btn-success py-0" style="font-size:0.65rem" onclick="attivaGiornata('+g.id+')">Attiva</button>';
+        html += '<div class="d-flex align-items-center justify-content-between mb-2 p-2" style="background:rgba(255,255,255,0.05);border-radius:8px">';
+        html += '<div><b>'+g.nome+'</b> <span style="color:'+col+';font-size:0.7rem">'+g.stato+'</span></div>';
+        html += '<div>'+btn+'</div></div>';
+      });
+      el.innerHTML = html;
+    })
+    .withFailureHandler(function(){ el.innerHTML='<span class="text-white-50 small">Errore</span>'; })
+    .getGiornate();
+}
+
+function attivaGiornata(id) {
+  if(!confirm('Attivare questa giornata?')) return;
+  google.script.run
+    .withSuccessHandler(function(res) { if(res&&res.ok){ caricaListaGiornateAdmin(); caricaGiornataAttivaUtente(); } else alert('Errore'); })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .attivaGiornata(id);
+}
+
+function chiudiGiornata(id) {
+  if(!confirm('Chiudere la giornata?')) return;
+  google.script.run
+    .withSuccessHandler(function(res) { if(res&&res.ok){ caricaListaGiornateAdmin(); caricaGiornataAttivaUtente(); } else alert('Errore'); })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .chiudiGiornata(id);
+}
+
+// ===== ADMIN: PARTITE =====
+function aggiornaPartiteAdmin(gId) {
+  var pSel = document.getElementById('adm-sel-p');
+  if(!pSel) return;
+  // If no giornata selected, show partite of active giornata
+  if(!gId) {
+    var opts = '<option value="">Seleziona Partita</option>';
+    partiteGiornata.forEach(function(m,i){ opts += '<option value="'+i+'">'+m+'</option>'; });
+    pSel.innerHTML = opts;
+    return;
+  }
+  // Load partite for the selected giornata from GAS
+  if(typeof google === 'undefined') {
+    var opts = '<option value="">Seleziona Partita</option>';
+    partiteGiornata.forEach(function(m,i){ opts += '<option value="'+i+'">'+m+'</option>'; });
+    pSel.innerHTML = opts;
+    return;
+  }
+  pSel.innerHTML = '<option value="">Caricamento...</option>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var lista = res || [];
+      var opts = '<option value="">Seleziona Partita</option>';
+      lista.forEach(function(m,i){ opts += '<option value="'+i+'">'+m+'</option>'; });
+      pSel.innerHTML = opts;
+    })
+    .withFailureHandler(function(){ pSel.innerHTML = '<option value="">Errore caricamento</option>'; })
+    .getPartiteGiornata(Number(gId));
+}
+
+function apriEditPartiteGiornata() {
+  var gId = document.getElementById('adm-sel-g').value;
+  if(!gId) return alert('Seleziona prima una giornata!');
+  if(typeof google==='undefined') { apriEditPartite(); return; }
+  google.script.run
+    .withSuccessHandler(function(res) { apriEditPartiteConLista(res||[], Number(gId)); })
+    .withFailureHandler(function(){ apriEditPartiteConLista([], Number(gId)); })
+    .getPartiteGiornata(Number(gId));
+}
+
+function apriEditPartite() {
+  apriEditPartiteConLista(partiteGiornata.slice(), null);
+}
+
+function apriEditPartiteConLista(lista, gId) {
+  var html = '';
+  lista.forEach(function(m,i) {
+    html += '<div class="card-fanta mb-2"><div class="d-flex justify-content-between align-items-center">';
+    html += '<input type="text" value="'+m+'" id="partita-edit-'+i+'" class="form-control me-2" style="flex:1">';
+    html += '<button class="btn btn-sm btn-outline-danger" onclick="eliminaPartitaLista('+i+','+(gId||'null')+')">X</button>';
+    html += '</div></div>';
+  });
+  html += '<div class="d-flex gap-2 mt-2"><input type="text" id="nuova-partita-input" class="form-control" placeholder="Squadra A vs Squadra B">';
+  html += '<button class="btn btn-warning btn-sm" onclick="aggiungiPartitaLista('+(gId||'null')+')">+</button></div>';
+  html += '<button class="btn btn-success w-100 mt-3 fw-bold" onclick="salvaPartiteLista('+(gId||'null')+')">SALVA PARTITE</button>';
+  document.getElementById('lista-scelta-container').innerHTML = html;
+  document.getElementById('titolo-scelta').innerText = gId ? 'Partite Giornata '+gId : 'Modifica Partite';
+  document.getElementById('overlay-scelta').style.display = 'block';
+}
+
+function eliminaPartitaLista(i, gId) {
+  var inputs = document.querySelectorAll('[id^="partita-edit-"]');
+  var lista = [];
+  for(var j=0; j<inputs.length; j++) { var v=inputs[j].value.trim(); if(v && j!==i) lista.push(v); }
+  apriEditPartiteConLista(lista, gId);
+}
+
+function aggiungiPartitaLista(gId) {
+  var v = document.getElementById('nuova-partita-input').value.trim();
+  if(!v) return alert('Inserisci il nome!');
+  var inputs = document.querySelectorAll('[id^="partita-edit-"]');
+  var lista = [];
+  for(var j=0; j<inputs.length; j++) { var val=inputs[j].value.trim(); if(val) lista.push(val); }
+  lista.push(v);
+  apriEditPartiteConLista(lista, gId);
+}
+
+function salvaPartiteLista(gId) {
+  var inputs = document.querySelectorAll('[id^="partita-edit-"]');
+  var lista = [];
+  for(var j=0; j<inputs.length; j++) { var v=inputs[j].value.trim(); if(v) lista.push(v); }
+  if(!gId) {
+    partiteGiornata = lista; chiudiScelta(); caricaGiornataAttiva();
+    return;
+  }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(res==='OK') {
+        chiudiScelta();
+        if(giornataAttiva && giornataAttiva.id===gId) { partiteGiornata=lista; caricaGiornataAttiva(); }
+        alert('Partite salvate!');
+      } else alert('Errore: '+res);
+    })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .salvaPartiteGiornata(gId, lista);
+}
+
+// ===== ADMIN: RISULTATI =====
+function inviaRisultati() {
+  var pIdx = parseInt(document.getElementById('adm-sel-p').value);
+  var g = parseInt(document.getElementById('adm-sel-g').value)||1;
+  var r1 = parseInt(document.getElementById('adm-res-1').value)||0;
+  var r2 = parseInt(document.getElementById('adm-res-2').value)||0;
+  var dado = document.getElementById('adm-dado-real').value;
+  var partita = partiteGiornata[pIdx];
+  if(!partita) return alert('Seleziona una partita!');
+  var btn = document.getElementById('btn-invia-risultati');
+  var fb = document.getElementById('adm-risultati-feedback');
+  btn.disabled=true; btn.innerText='Calcolo...'; fb.innerHTML='';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled=false; btn.innerText='Invia Risultati e Calcola Punti';
+      if(typeof res==='object' && res.ok) {
+        var html = 'Elaborazione completata!<br>';
+        if(res.dettagli && res.dettagli.length>0) {
+          res.dettagli.forEach(function(d) {
+            html += '<small><b>'+d.username+'</b>: '+(d.punti>0?'+'+d.punti+' pt ('+d.motivo+')':'0 pt')+'</small><br>';
+          });
+        } else html += '<small>Nessun pronostico trovato.</small>';
+        fb.innerHTML = '<span class="text-success">'+html+'</span>';
+        if(res.risultatiSalvati) renderRisultatiSalvati(res.risultatiSalvati);
+      } else fb.innerHTML = '<span class="text-danger">Errore: '+res+'</span>';
+    })
+    .withFailureHandler(function(err){ btn.disabled=false; btn.innerText='Invia Risultati e Calcola Punti'; fb.innerHTML='<span class="text-danger">Errore: '+JSON.stringify(err)+'</span>'; })
+    .inviaRisultati({partita:partita, giornata:g, gol1:r1, gol2:r2, dado:dado});
+}
+
+function renderRisultatiSalvati(lista) {
+  var el = document.getElementById('adm-risultati-salvati');
+  if(!el) return;
+  if(!lista || lista.length===0) { el.innerHTML='<span class="text-white-50 small">Nessun risultato salvato</span>'; return; }
+  var html = '';
+  lista.forEach(function(r) {
+    html += '<div class="d-flex align-items-center justify-content-between mb-2 p-2" style="background:rgba(255,255,255,0.05);border-radius:8px;border-left:3px solid var(--gold)">';
+    html += '<div class="small"><b class="text-warning">'+r.partita+'</b><br>';
+    html += '<span>'+r.gol1+'-'+r.gol2+' | Dado: '+r.dado+' | G'+r.giornata+'</span></div>';
+    html += '<div class="d-flex gap-1">';
+    html += '<button class="btn btn-sm btn-outline-warning py-0" onclick="apriModificaRisultato('+r.riga+',\''+r.partita.replace(/'/g,'&#39;')+'\','+r.gol1+','+r.gol2+',\''+r.dado+'\','+r.giornata+')">E</button>';
+    html += '<button class="btn btn-sm btn-outline-danger py-0" onclick="eliminaRisultato('+r.riga+',\''+r.partita.replace(/'/g,'&#39;')+'\')">X</button>';
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function caricaRisultatiSalvati() {
+  if(typeof google==='undefined') return;
+  var el = document.getElementById('adm-risultati-salvati');
+  if(!el) return;
+  el.innerHTML = '<span class="text-white-50 small">Caricamento...</span>';
+  google.script.run
+    .withSuccessHandler(function(res) { renderRisultatiSalvati(res||[]); })
+    .withFailureHandler(function(){ el.innerHTML='<span class="text-danger small">Errore</span>'; })
+    .getRisultati();
+}
+
+function apriModificaRisultato(sheetRow, partita, g1, g2, dado, giornata) {
+  var idx = partiteGiornata.indexOf(partita);
+  var pSel = document.getElementById('adm-sel-p');
+  if(idx>=0 && pSel) pSel.value=idx;
+  document.getElementById('adm-res-1').value=g1;
+  document.getElementById('adm-res-2').value=g2;
+  document.getElementById('adm-dado-real').value=dado;
+  var fb = document.getElementById('adm-risultati-feedback');
+  fb.innerHTML = '<span class="text-warning">Modifica: '+partita+' '+g1+'-'+g2+'</span>';
+  var btn = document.getElementById('btn-invia-risultati');
+  btn.innerText = 'Modifica e Ricalcola';
+  btn.onclick = function(){ inviaModificaRisultato(partita); };
+}
+
+function inviaModificaRisultato(partitaOriginale) {
+  var r1=parseInt(document.getElementById('adm-res-1').value)||0;
+  var r2=parseInt(document.getElementById('adm-res-2').value)||0;
+  var dado=document.getElementById('adm-dado-real').value;
+  var g=parseInt(document.getElementById('adm-sel-g').value)||1;
+  var btn=document.getElementById('btn-invia-risultati');
+  var fb=document.getElementById('adm-risultati-feedback');
+  btn.disabled=true; btn.innerText='Ricalcolo...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled=false; btn.innerText='Invia Risultati e Calcola Punti'; btn.onclick=inviaRisultati;
+      if(typeof res==='object' && res.ok) {
+        fb.innerHTML='<span class="text-success">Ricalcolo completato!</span>';
+        if(res.risultatiSalvati) renderRisultatiSalvati(res.risultatiSalvati);
+      } else fb.innerHTML='<span class="text-danger">Errore: '+res+'</span>';
+    })
+    .withFailureHandler(function(err){ btn.disabled=false; btn.innerText='Invia Risultati e Calcola Punti'; btn.onclick=inviaRisultati; fb.innerHTML='<span class="text-danger">Errore</span>'; })
+    .modificaERicalcola({partita:partitaOriginale, gol1:r1, gol2:r2, dado:dado, giornata:g});
+}
+
+function eliminaRisultato(sheetRow, partita) {
+  if(!confirm('Eliminare il risultato di '+partita+'?')) return;
+  var fb=document.getElementById('adm-risultati-feedback');
+  fb.innerHTML='<span class="text-warning">Eliminazione...</span>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(typeof res==='object' && res.ok) {
+        fb.innerHTML='<span class="text-success">Risultato eliminato!</span>';
+        if(res.risultatiSalvati) renderRisultatiSalvati(res.risultatiSalvati); else caricaRisultatiSalvati();
+      } else fb.innerHTML='<span class="text-danger">Errore: '+res+'</span>';
+    })
+    .withFailureHandler(function(err){ fb.innerHTML='<span class="text-danger">Errore</span>'; })
+    .eliminaERicalcola(sheetRow);
+}
+
+function caricaPronosticiDebug() {
+  if(typeof google==='undefined') return;
+  var el=document.getElementById('adm-pronostici-debug');
+  if(!el) return;
+  el.innerHTML='<span class="text-white-50 small">Caricamento...</span>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(!res || res.length<2) { el.innerHTML='<span class="text-white-50 small">Nessun pronostico</span>'; return; }
+      var html='';
+      res.slice(1).forEach(function(r) {
+        html += '<div style="border-bottom:1px solid rgba(255,255,255,0.08);padding:3px 0">';
+        html += '<b style="color:var(--gold)">'+r[0]+'</b> - "'+r[1]+'" '+r[2]+'-'+r[3]+' dado:'+r[4];
+        html += '</div>';
+      });
+      el.innerHTML = html;
+    })
+    .withFailureHandler(function(){ el.innerHTML='<span class="text-danger small">Errore</span>'; })
+    .getData('Pronostici');
+}
+
+function debugCalcolo() {
+  var pIdx = parseInt(document.getElementById('adm-sel-p').value);
+  var r1 = parseInt(document.getElementById('adm-res-1').value)||0;
+  var r2 = parseInt(document.getElementById('adm-res-2').value)||0;
+  var dado = document.getElementById('adm-dado-real').value;
+  var partita = partiteGiornata[pIdx];
+  if(!partita) return alert('Seleziona una partita!');
+  var el = document.getElementById('adm-debug-calcolo');
+  el.style.display='block'; el.innerHTML='Debug in corso...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(res.error) { el.innerHTML='<span class="text-danger">'+res.error+'</span>'; return; }
+      el.innerHTML = res.log.map(function(l){ return '<div>'+l+'</div>'; }).join('');
+    })
+    .withFailureHandler(function(err){ el.innerHTML='<span class="text-danger">Errore</span>'; })
+    .debugCalcoloPunti(partita, r1, r2, dado);
+}
+
+// ===== ADMIN: LOGO E UTENTI =====
+function convertiImgur(url) {
+  if(!url) return url;
+  var m = url.match(/imgur\.com\/a\/[^#]+#([a-zA-Z0-9]+)/);
+  if(m) return 'https://i.imgur.com/'+m[1]+'.png';
+  m = url.match(/imgur\.com\/(?!a\/)([a-zA-Z0-9]+)$/);
+  if(m) return 'https://i.imgur.com/'+m[1]+'.png';
+  return url;
+}
+
+function anteprima(inputId, imgId) {
+  var url = convertiImgur(document.getElementById(inputId).value.trim());
+  if(url !== document.getElementById(inputId).value) document.getElementById(inputId).value=url;
+  var img = document.getElementById(imgId);
+  var stato = document.getElementById(imgId+'-stato');
+  if(!url) { img.style.display='none'; if(stato) stato.innerText=''; return; }
+  img.onload = function(){ img.style.display='block'; if(stato) stato.innerHTML='<span class="text-success">URL valido</span>'; };
+  img.onerror = function(){ img.style.display='none'; if(stato) stato.innerHTML='<span class="text-danger">URL non valido</span>'; };
+  img.src = url;
+}
+
+function salvaLogoAdmin() {
+  var username = document.getElementById('adm-sel-user-logo').value;
+  var url = convertiImgur(document.getElementById('adm-user-logo-url').value.trim());
+  if(!username) return alert('Seleziona un utente!');
+  if(!url) return alert('Inserisci un URL!');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(res==='OK') {
+        alert('Logo salvato per @'+username+'!');
+        document.getElementById('adm-user-logo-url').value='';
+        if(username===userData.username) {
+          var lh=document.getElementById('user-logo-display');
+          lh.src=url; lh.classList.remove('hidden');
+        }
+      } else alert('Errore: '+res);
+    })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .salvaLogoSoddisfatto(username, url);
+}
+
+function apriEditUtente(username, coins) {
+  document.getElementById('eu-username').value=username;
+  document.getElementById('eu-username-label').innerText=username;
+  document.getElementById('eu-coins').value=coins;
+  document.getElementById('overlay-edit-utente').style.display='block';
+}
+function chiudiEditUtente() { document.getElementById('overlay-edit-utente').style.display='none'; }
+
+function salvaEditUtente() {
+  var username=document.getElementById('eu-username').value;
+  var coins=parseInt(document.getElementById('eu-coins').value);
+  if(isNaN(coins)) return alert('Valore coins non valido!');
+  var btn=document.getElementById('btn-salva-edit-utente');
+  if(btn){btn.disabled=true;btn.innerText='Salvataggio...';}
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(btn){btn.disabled=false;btn.innerText='SALVA MODIFICHE';}
+      if(res==='OK') { alert('Utente aggiornato!'); chiudiEditUtente(); caricaAdminData(); }
+      else alert('Errore: '+res);
+    })
+    .withFailureHandler(function(err){if(btn){btn.disabled=false;btn.innerText='SALVA MODIFICHE';}alert('Errore: '+JSON.stringify(err));})
+    .aggiornaUtente({username:username, coins:coins});
+}
+
+function attiva(un) {
+  google.script.run.withSuccessHandler(function(){ alert('Utente attivato!'); caricaAdminData(); }).attivaUtente(un);
+}
+
+function testConnessioneGAS() {
+  var el=document.getElementById('gas-test-result');
+  el.innerHTML='<span class="text-warning">Test in corso...</span>';
+  if(typeof google==='undefined') { el.innerHTML='<span class="text-danger">google.script non disponibile</span>'; return; }
+  google.script.run
+    .withSuccessHandler(function(res){ el.innerHTML='<span class="text-success">GAS OK: '+JSON.stringify(res)+'</span>'; })
+    .withFailureHandler(function(err){ el.innerHTML='<span class="text-danger">Errore: '+JSON.stringify(err)+'</span>'; })
+    .pingGAS();
+}
+
+function caricaAdminData() {
+  if(typeof google==='undefined') return;
+  google.script.run.withSuccessHandler(function(res) {
+    if(!res) return;
+    var utenti = res.filter(function(u){ return u[0]!=='Nome' && u[2]; });
+    var attivi = utenti.filter(function(u){ return u[5]==='Attivo'; });
+    document.getElementById('adm-sel-user-logo').innerHTML =
+      '<option value="">Seleziona Utente Attivo</option>' +
+      attivi.map(function(u){ return '<option value="'+u[2]+'">'+u[2]+'</option>'; }).join('');
+    var inattivi = utenti.filter(function(u){ return u[5]==='Inattivo'; });
+    document.getElementById('admin-user-list').innerHTML = inattivi.length
+      ? inattivi.map(function(u){ return '<div class="d-flex justify-content-between mb-2"><span>'+u[2]+'</span><button class="btn btn-success btn-sm" onclick="attiva(\''+u[2]+'\')">Attiva</button></div>'; }).join('')
+      : '<span class="text-white-50">Nessun utente in attesa</span>';
+    var html = '<table style="width:100%;border-collapse:collapse;">';
+    html += '<tr style="color:var(--gold);border-bottom:1px solid var(--gold);"><td>User</td><td>Stato</td><td>Coins</td><td>Logo</td><td></td><td></td></tr>';
+    utenti.forEach(function(u) {
+      var logoVal=u[8]||'';
+      var logoCell = logoVal ? '<img src="'+logoVal+'" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;">' : '-';
+      html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
+      html += '<td style="padding:4px;font-size:0.8rem"><b>'+u[2]+'</b></td>';
+      html += '<td><span style="color:'+(u[5]==='Attivo'?'#4caf50':'#ff9800')+';font-size:0.7rem">'+u[5]+'</span></td>';
+      html += '<td style="font-size:0.8rem">'+u[6]+'</td>';
+      html += '<td>'+logoCell+'</td>';
+      html += '<td><button class="btn btn-sm btn-outline-warning py-0" style="font-size:0.65rem" onclick="apriEditUtente(\''+u[2]+'\','+u[6]+')">E</button></td>';
+      html += '<td><button class="btn btn-sm btn-outline-info py-0" style="font-size:0.65rem" onclick="apriSquadraAdmin(\''+u[2]+'\')"><i class="fas fa-users"></i></button></td>';
+      html += '</tr>';
+    });
+    html += '</table>';
+    document.getElementById('admin-debug-table').innerHTML = html;
+  }).getData('Utenti');
+}
+
+// ===== ADMIN: BONUS/MALUS =====
+function caricaBonusMalus() {
+  if(typeof google==='undefined') { assicuraNonHaGiocato(); return; }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      bonusMalusList = (res||[]).slice(1).map(function(r){ return {nome:String(r[0]||''),valore:Number(r[1]||0)}; });
+      assicuraNonHaGiocato();
+    })
+    .withFailureHandler(function(){ assicuraNonHaGiocato(); })
+    .getData('Bonus_Malus');
+}
+
+function assicuraNonHaGiocato() {
+  var esiste = bonusMalusList.some(function(b){ return String(b.nome).trim().toLowerCase()==='non ha giocato'; });
+  if(!esiste) {
+    bonusMalusList.push({ nome:'Non Ha Giocato', valore:0 });
+    renderBonusMalus();
+    salvaTuttoBonusMalus();
+  } else {
+    renderBonusMalus();
+  }
+}
+
+function renderBonusMalus() {
+  var c = document.getElementById('adm-bonus-malus-list');
+  if(c) {
+    var html = '';
+    html += '<div class="d-flex align-items-center gap-2 mb-2">';
+    html += '<div class="form-control form-control-sm" style="flex:2;opacity:0.75"><i class="fas fa-ban"></i> Non Ha Giocato</div>';
+    html += '<div class="form-control form-control-sm text-center" style="width:70px;opacity:0.75">0</div>';
+    html += '<span class="small text-white-50" style="font-size:0.55rem;white-space:nowrap">automatico</span>';
+    html += '</div>';
+    var custom = bonusMalusList.filter(function(b){ return String(b.nome).trim().toLowerCase()!=='non ha giocato'; });
+    if(custom.length===0) { html += '<div class="text-white-50 small">Nessuna tipologia personalizzata</div>'; }
+    else {
+      custom.forEach(function(b) {
+        var i = bonusMalusList.indexOf(b);
+        html += '<div class="d-flex align-items-center gap-2 mb-2">';
+        html += '<input type="text" value="'+b.nome+'" id="bm-nome-'+i+'" class="form-control form-control-sm" style="flex:2">';
+        html += '<input type="number" value="'+b.valore+'" id="bm-val-'+i+'" class="form-control form-control-sm" style="width:70px">';
+        html += '<button class="btn btn-sm btn-outline-danger" onclick="eliminaBonusMalus('+i+')">X</button>';
+        html += '<button class="btn btn-sm btn-outline-warning" onclick="salvaBonusMalusRiga('+i+')">S</button>';
+        html += '</div>';
+      });
+    }
+    c.innerHTML = html;
+  }
+  var selType=document.getElementById('adm-bonus-type');
+  if(selType) selType.innerHTML='<option value="">Seleziona Tipo Bonus</option>'+bonusMalusList.map(function(b){ return '<option value="'+b.valore+'">'+b.nome+' ('+(b.valore>=0?'+':'')+b.valore+' pt)</option>'; }).join('');
+  var selP=document.getElementById('adm-bonus-p');
+  if(selP) {
+    var tutti=calciatoriGenerali.slice(1).filter(function(c){ return c[0]; });
+    selP.innerHTML='<option value="">Seleziona Giocatore</option>'+tutti.map(function(c){ return '<option value="'+c[0]+'">'+c[0]+' ('+c[2]+' - '+c[1]+')</option>'; }).join('');
+  }
+}
+
+function creaNuovoBonusMalus() {
+  var nome = document.getElementById('adm-new-bm-nome').value.trim();
+  var val = parseInt(document.getElementById('adm-new-bm-val').value) || 0;
+  if(!nome) return alert('Inserisci il nome!');
+  bonusMalusList.push({ nome:nome, valore:val });
+  document.getElementById('adm-new-bm-nome').value='';
+  document.getElementById('adm-new-bm-val').value='';
+  renderBonusMalus(); salvaTuttoBonusMalus();
+}
+
+function eliminaBonusMalus(i) {
+  if(!confirm('Eliminare?')) return;
+  bonusMalusList.splice(i,1); renderBonusMalus(); salvaTuttoBonusMalus();
+}
+
+function salvaBonusMalusRiga(i) {
+  bonusMalusList[i].nome = document.getElementById('bm-nome-'+i).value.trim();
+  bonusMalusList[i].valore = parseInt(document.getElementById('bm-val-'+i).value)||0;
+  salvaTuttoBonusMalus();
+}
+
+function salvaTuttoBonusMalus() {
+  if(typeof google==='undefined') { alert('Salvato (demo)'); return; }
+  google.script.run
+    .withSuccessHandler(function(res){ if(res==='OK') renderBonusMalus(); })
+    .withFailureHandler(function(err){ alert('Errore: '+err); })
+    .salvaBonusMalus(bonusMalusList);
+}
+
+function assegnaBonus() {
+  var giocatore = document.getElementById('adm-bonus-p').value;
+  var tipoSel = document.getElementById('adm-bonus-type');
+  var tipoNome = tipoSel.options[tipoSel.selectedIndex] ? tipoSel.options[tipoSel.selectedIndex].text : '';
+  var punti = parseInt(document.getElementById('adm-bonus-type').value);
+  var giornata = parseInt(document.getElementById('adm-bonus-g').value);
+  var feedback = document.getElementById('adm-bonus-feedback');
+  if(!giocatore) { feedback.innerHTML='<span class="text-danger">Seleziona un giocatore</span>'; return; }
+  if(!tipoNome || isNaN(punti)) { feedback.innerHTML='<span class="text-danger">Seleziona il tipo di bonus</span>'; return; }
+  if(!giornata || giornata<1) { feedback.innerHTML='<span class="text-danger">Seleziona la giornata</span>'; return; }
+  var btn = document.getElementById('btn-assegna-bonus');
+  btn.disabled=true; btn.innerText='Assegnazione...'; feedback.innerHTML='';
+  if(typeof google==='undefined') {
+    btn.disabled=false; btn.innerText='Assegna Punti';
+    feedback.innerHTML='<span class="text-success">Demo</span>'; return;
+  }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled=false; btn.innerText='Assegna Punti';
+      if(res==='OK') {
+        feedback.innerHTML='<span class="text-success">+'+punti+' pt a '+giocatore+'</span>';
+        caricaStoricoBonus();
+      } else { feedback.innerHTML='<span class="text-danger">'+res+'</span>'; }
+    })
+    .withFailureHandler(function(err){ btn.disabled=false; btn.innerText='Assegna Punti'; feedback.innerHTML='<span class="text-danger">Errore</span>'; })
+    .assegnaBonus({ giocatore:giocatore, punti:punti, giornata:giornata, tipoNome:tipoNome });
+}
+
+function caricaStoricoBonus() {
+  if(typeof google==='undefined') return;
+  var el=document.getElementById('adm-bonus-storico');
+  if(!el) return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(!res || res.length<2) { el.innerHTML='<span class="text-white-50 small">Nessun bonus</span>'; return; }
+      var html='';
+      res.slice(1).forEach(function(r,i) {
+        var punti=Number(r[2]);
+        html += '<div class="d-flex align-items-center justify-content-between mb-1" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:4px 0">';
+        html += '<div class="small"><b>'+r[0]+'</b> - '+r[1]+' <span style="color:'+(punti>=0?'#4caf50':'#f44336')+'">'+(punti>=0?'+':'')+punti+' pt</span> G'+r[3]+'</div>';
+        html += '<button class="btn btn-sm btn-outline-danger py-0 ms-2" style="font-size:0.6rem" onclick="eliminaBonusAssegnato('+(i+2)+')">X</button>';
+        html += '</div>';
+      });
+      el.innerHTML = html;
+    })
+    .withFailureHandler(function(){ el.innerHTML='<span class="text-danger small">Errore</span>'; })
+    .getBonusLog();
+}
+
+function eliminaBonusAssegnato(sheetRow) {
+  if(!confirm('Eliminare?')) return;
+  google.script.run
+    .withSuccessHandler(function(res){ if(res==='OK') caricaStoricoBonus(); else alert('Errore: '+res); })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .eliminaBonusLog(sheetRow);
+}
+
+function calcolaPunteggiBonusGiornata() {
+  var g = parseInt(document.getElementById('adm-bonus-calc-giornata').value);
+  if(!g || g<1) return alert('Seleziona una giornata!');
+  var btn = document.getElementById('btn-calcola-bonus-giornata');
+  var fb = document.getElementById('adm-bonus-calc-feedback');
+  btn.disabled=true; btn.innerText='Calcolo...'; fb.innerHTML='';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled=false; btn.innerText='Calcola e Applica Punteggi Bonus';
+      if(typeof res==='object' && res.ok) {
+        var html = 'Calcolo completato per la Giornata '+g+'!<br>';
+        if(res.dettagli && res.dettagli.length>0) {
+          res.dettagli.forEach(function(d) {
+            html += '<small><b>'+d.username+'</b>: '+d.punti+' pt ('+d.motivo+')</small><br>';
+          });
+        } else html += '<small>Nessuna formazione trovata per questa giornata.</small>';
+        fb.innerHTML = '<span class="text-success">'+html+'</span>';
+        caricaAdminData();
+      } else fb.innerHTML = '<span class="text-danger">Errore: '+res+'</span>';
+    })
+    .withFailureHandler(function(err){ btn.disabled=false; btn.innerText='Calcola e Applica Punteggi Bonus'; fb.innerHTML='<span class="text-danger">Errore: '+JSON.stringify(err)+'</span>'; })
+    .calcolaPunteggiBonusGiornata(g);
+}
+
+// ===== ADMIN: CALCIATORI =====
+function adminAggiungiPlayer() {
+  var dati = {
+    nome: document.getElementById('adm-nome').value,
+    squadra: document.getElementById('adm-team').value,
+    ruolo: document.getElementById('adm-ruolo').value,
+    costo: document.getElementById('adm-costo').value,
+    foto: convertiImgur(document.getElementById('adm-foto-url').value.trim())
+  };
+  if(!dati.nome || !dati.costo) return alert('Inserisci almeno Nome e Costo!');
+  google.script.run.withSuccessHandler(function(res) {
+    if(res==='OK') {
+      alert('Calciatore salvato!');
+      document.getElementById('adm-nome').value='';
+      document.getElementById('adm-team').value='';
+      document.getElementById('adm-costo').value='';
+      document.getElementById('adm-foto-url').value='';
+      caricaTuttiIDati();
+    }
+  }).aggiungiCalciatore(dati);
+}
+
+function adminFiltraListone(ruolo, btn) {
+  adminRuoloAttivo = ruolo;
+  document.querySelectorAll('[id^="adm-tab-"]').forEach(function(t){ t.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  renderAdminListone();
+}
+
+function renderAdminListone() {
+  var filtered = calciatoriGenerali.slice(1).filter(function(c){ return c[2]===adminRuoloAttivo; });
+  filtered.sort(function(a,b){ return b[3]-a[3]; });
+  var container = document.getElementById('adm-listone-edit');
+  if(!container) return;
+  if(filtered.length===0) { container.innerHTML='<div class="text-white-50 small text-center py-3">Nessun giocatore</div>'; return; }
+  container.innerHTML = filtered.map(function(c) {
+    var arrayIdx = calciatoriGenerali.findIndex(function(row){ return row[0]===c[0] && row[1]===c[1] && row[2]===c[2]; });
+    var sheetRow = arrayIdx + 1;
+    return '<div class="player-list-item" style="flex-wrap:wrap;gap:6px;">' +
+      '<div class="d-flex align-items-center flex-grow-1">' +
+      '<img src="'+(c[4]||'https://via.placeholder.com/40')+'" class="player-photo-mini" onerror="this.src=\'https://via.placeholder.com/40\'">' +
+      '<div><b>'+c[0]+'</b><br><small class="text-white-50">'+c[1]+' - '+c[3]+' KC</small></div>' +
+      '</div>' +
+      '<div class="d-flex gap-2">' +
+      '<button class="btn btn-sm btn-outline-warning" onclick="apriEditPlayer('+arrayIdx+','+sheetRow+')">E</button>' +
+      '<button class="btn btn-sm btn-outline-danger" onclick="eliminaPlayer('+sheetRow+',\''+c[0].replace(/'/g,'&#39;')+'\')">X</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function apriEditPlayer(arrayIdx, sheetRow) {
+  var c = calciatoriGenerali[arrayIdx];
+  if(!c) return;
+  document.getElementById('edit-row-index').value = sheetRow;
+  document.getElementById('edit-nome').value = c[0]||'';
+  document.getElementById('edit-team').value = c[1]||'';
+  document.getElementById('edit-ruolo').value = c[2]||'A';
+  document.getElementById('edit-costo').value = c[3]||'';
+  document.getElementById('edit-foto').value = c[4]||'';
+  var prevImg = document.getElementById('prev-edit');
+  if(c[4]){ prevImg.src=c[4]; prevImg.style.display='block'; } else { prevImg.style.display='none'; }
+  document.getElementById('overlay-edit-player').style.display='block';
+}
+function chiudiEditPlayer() { document.getElementById('overlay-edit-player').style.display='none'; }
+
+function salvaModificaPlayer() {
+  var sheetRow = parseInt(document.getElementById('edit-row-index').value);
+  if(isNaN(sheetRow) || sheetRow<1) return alert('Errore riga. Riapri il giocatore.');
+  var dati = {
+    sheetRow: sheetRow,
+    nome: document.getElementById('edit-nome').value.trim(),
+    squadra: document.getElementById('edit-team').value.trim(),
+    ruolo: document.getElementById('edit-ruolo').value,
+    costo: parseInt(document.getElementById('edit-costo').value),
+    foto: convertiImgur(document.getElementById('edit-foto').value.trim())
+  };
+  if(!dati.nome) return alert('Il nome e obbligatorio!');
+  if(!dati.costo) return alert('Il costo e obbligatorio!');
+  var btn = document.getElementById('btn-salva-edit-player');
+  if(btn){ btn.disabled=true; btn.innerText='Salvataggio...'; }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if(btn){ btn.disabled=false; btn.innerText='SALVA MODIFICHE'; }
+      if(res==='OK') { alert('Modifiche salvate!'); chiudiEditPlayer(); caricaTuttiIDati(); }
+      else alert('Errore: '+res);
+    })
+    .withFailureHandler(function(err){ if(btn){ btn.disabled=false; btn.innerText='SALVA MODIFICHE'; } alert('Errore: '+JSON.stringify(err)); })
+    .modificaCalciatore(dati);
+}
+
+function eliminaPlayer(sheetRow, nome) {
+  if(!confirm('Eliminare '+nome+'?')) return;
+  google.script.run
+    .withSuccessHandler(function(res){ if(res==='OK'){ alert(nome+' eliminato!'); caricaTuttiIDati(); } else alert('Errore: '+res); })
+    .withFailureHandler(function(err){ alert('Errore: '+JSON.stringify(err)); })
+    .eliminaCalciatore(sheetRow);
+}
+
+
+  </script>
+</body>
+</html>
