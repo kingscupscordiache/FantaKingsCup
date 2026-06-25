@@ -66,24 +66,24 @@
 <div id="view-login" class="container mt-5 hidden">
   <div class="text-center mb-4"><img src="https://i.imgur.com/FFWT0TZ.png" width="120"></div>
   <div class="card-fanta">
-    <h3 class="text-center text-warning mb-4">Accedi</h3>
-    <input type="text" id="l-user" class="form-control" placeholder="Email o Username">
-    <input type="password" id="l-pass" class="form-control" placeholder="Password">
-    <button id="btn-login" class="btn btn-warning w-100 fw-bold" onclick="eseguiLogin()">ENTRA</button>
-    <button class="btn btn-link w-100 text-white-50 btn-sm mt-3" onclick="switchV('view-reg')">Registrati ora</button>
+    <h3 class="text-center text-warning mb-4">Entra nel Torneo</h3>
+    <input type="text" id="l-user" class="form-control" placeholder="Nickname o Contatto">
+    <input type="password" id="l-pass" class="form-control" placeholder="Codice segreto">
+    <button id="btn-login" class="btn btn-warning w-100 fw-bold" onclick="eseguiLogin()">ACCEDI AL FANTA</button>
+    <button class="btn btn-link w-100 text-white-50 btn-sm mt-3" onclick="switchV('view-reg')">Prima volta? Iscriviti qui</button>
   </div>
 </div>
 
 <div id="view-reg" class="container mt-5 hidden">
   <div class="card-fanta">
-    <h3 class="text-center text-warning mb-4">Crea Account</h3>
+    <h3 class="text-center text-warning mb-4">Iscrizione al Torneo</h3>
     <input type="text" id="r-nome" class="form-control" placeholder="Nome">
     <input type="text" id="r-cogn" class="form-control" placeholder="Cognome">
-    <input type="text" id="r-user" class="form-control" placeholder="Username">
-    <input type="email" id="r-mail" class="form-control" placeholder="Email">
-    <input type="password" id="r-pass" class="form-control" placeholder="Password">
+    <input type="text" id="r-user" class="form-control" placeholder="Nickname (visibile in classifica)">
+    <input type="text" id="r-mail" class="form-control" placeholder="Contatto (numero o mail)">
+    <input type="password" id="r-pass" class="form-control" placeholder="Scegli un codice segreto">
     <button class="btn btn-warning w-100 fw-bold" onclick="eseguiReg()">INVIA ISCRIZIONE</button>
-    <button class="btn btn-link w-100 text-white" onclick="switchV('view-login')">Torna al login</button>
+    <button class="btn btn-link w-100 text-white" onclick="switchV('view-login')">Hai già un account? Entra qui</button>
   </div>
 </div>
 
@@ -396,7 +396,7 @@
 
   // Incolla qui l'URL del deploy Apps Script (Distribuisci → Gestisci
   // distribuzioni → copia URL), che deve finire con /exec
-  var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz5-dmizqjI3l6nJcL42xJU6OoIluja2n3n1uTICcADxA4T8z-G53XEK0AlMvH58UaW/exec';
+  var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwf4AciW0kAyspM8yrDY3fxF5F-vLi2FawCx28nmovhJ7ATDL0_RTq45rkov38mO62F/exec';
 
   function creaChain(successHandler, failureHandler) {
     return new Proxy({}, {
@@ -480,18 +480,18 @@ function eseguiLogin() {
   if(typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
       .withSuccessHandler(function(res) {
-        if(btn) { btn.disabled=false; btn.innerText='ENTRA'; }
+        if(btn) { btn.disabled=false; btn.innerText='ACCEDI AL FANTA'; }
         if(res && res.status === 'SUCCESS') avviaApp(res);
-        else if(res && res.status === 'INATTIVO') alert('Account non attivo.');
-        else alert('Credenziali errate.');
+        else if(res && res.status === 'INATTIVO') alert('Account non ancora attivo. Manda un messaggio al 3887884169 per confermare la tua iscrizione.');
+        else alert('Nickname o codice segreto non riconosciuti. Ricontrolla i dati inseriti.');
       })
       .withFailureHandler(function(err) {
-        if(btn) { btn.disabled=false; btn.innerText='ENTRA'; }
-        alert('Errore GAS: ' + JSON.stringify(err));
+        if(btn) { btn.disabled=false; btn.innerText='ACCEDI AL FANTA'; }
+        alert('Errore di connessione: ' + JSON.stringify(err));
       })
       .login(u, p);
   } else {
-    if(btn) { btn.disabled=false; btn.innerText='ENTRA'; }
+    if(btn) { btn.disabled=false; btn.innerText='ACCEDI AL FANTA'; }
     avviaApp({username:u, coins:150, isAdmin:true, logo:'', status:'SUCCESS'});
   }
 }
@@ -2115,3 +2115,5 @@ function eliminaPlayer(sheetRow, nome) {
   </script>
 </body>
 </html>
+  
+ 
